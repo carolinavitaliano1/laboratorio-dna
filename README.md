@@ -8,5 +8,6 @@ Simulações interativas de biologia molecular em português, para estudar mexen
 - Transcrição e processamento do RNA
 - Tradução
 - Epigenética e controle dos genes
+- Estrutura do gene: procarionte e eucarionte
 
 É um site estático: tudo está em `index.html`, sem etapa de build.

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Simulações interativas de biologia molecular em português: núcleo, nucleotídeos, replicação, transcrição, tradução e epigenética.">
+<meta name="description" content="Simulações interativas de biologia molecular em português: núcleo, nucleotídeos, replicação, transcrição, tradução, epigenética e estrutura do gene.">
 <style>:root{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Laboratório do DNA</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@500;600&display=swap">
@@ -155,6 +155,14 @@ summary{cursor:pointer;font-weight:700;min-height:28px}
 .meter{height:14px;border-radius:999px;background:var(--surface);border:1px solid var(--line);overflow:hidden}
 .meter i{display:block;height:100%;background:var(--rna);width:0;transition:width .25s}
 .seqline{font-family:var(--f-mono);font-size:.82rem;color:var(--muted);margin:0;overflow-wrap:anywhere}
+/* gene */
+#ge-draw [data-k]{cursor:pointer}
+#ge-draw .sel{stroke:var(--ink);stroke-width:2.5}
+#ge-draw .mv{transition:transform .9s ease,opacity .6s ease}
+.rec{display:block;margin-top:6px;color:var(--muted);font-size:.93rem}
+.gloss{list-style:none;padding:0!important;gap:0!important}
+.gloss li{padding:10px 0;border-bottom:1px solid var(--line)}
+.model{margin:0;font-size:1rem}
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}.ppi{opacity:0}}
 </style>
 </head>
@@ -163,7 +171,7 @@ summary{cursor:pointer;font-weight:700;min-height:28px}
 <div class="wrap">
   <header class="top">
     <h1>Laboratório do DNA</h1>
-    <p>Seis simulações para mexer e entender, do núcleo à epigenética. A explicação fica logo abaixo de cada uma.</p>
+    <p>Sete simulações para mexer e entender, do núcleo à estrutura do gene. A explicação fica logo abaixo de cada uma.</p>
   </header>
 </div>
 
@@ -176,6 +184,7 @@ summary{cursor:pointer;font-weight:700;min-height:28px}
     <button class="tab" role="tab" data-tab="transcricao">Transcrição</button>
     <button class="tab" role="tab" data-tab="traducao">Tradução</button>
     <button class="tab" role="tab" data-tab="epigenetica">Epigenética</button>
+    <button class="tab" role="tab" data-tab="gene">Gene</button>
   </div></div>
 </nav>
 
@@ -185,7 +194,7 @@ summary{cursor:pointer;font-weight:700;min-height:28px}
 <!-- ============ INÍCIO ============ -->
 <section id="sec-inicio">
   <h2>Escolha uma simulação</h2>
-  <p class="lede">DNA e proteínas · 6 simulações. Em cada uma você pode mexer passo a passo ou assistir à animação.</p>
+  <p class="lede">DNA e proteínas · 7 simulações. Em cada uma você pode mexer passo a passo ou assistir à animação.</p>
   <div class="cards">
     <a class="card" href="#nucleo" data-go="nucleo"><div class="thumb"><svg viewBox="0 0 160 80" aria-hidden="true">
       <path d="M118 22A46 46 0 0 1 118 58" fill="none" stroke="var(--muted)" stroke-width="3" stroke-linecap="round"/><path d="M126 18A54 54 0 0 1 126 62" fill="none" stroke="var(--muted)" stroke-width="3" stroke-linecap="round"/>
@@ -222,6 +231,13 @@ summary{cursor:pointer;font-weight:700;min-height:28px}
       <g stroke="var(--bad)" stroke-width="2"><line x1="109" y1="46" x2="109" y2="62"/><line x1="131" y1="46" x2="131" y2="62"/></g><circle cx="109" cy="65" r="4.5" fill="var(--bad)"/><circle cx="131" cy="65" r="4.5" fill="var(--bad)"/>
       <g fill="var(--prot)" stroke="var(--old)" stroke-width="3"><circle cx="34" cy="44" r="13"/><circle cx="66" cy="44" r="13"/><circle cx="98" cy="44" r="13"/><circle cx="120" cy="44" r="13"/><circle cx="142" cy="44" r="13"/></g></svg></div>
       <div class="body"><span class="tag">simulação · animação</span><h3>Epigenética e controle dos genes</h3><p>Acetile e metile a cromatina e veja o gene ligar ou desligar.</p><span class="go">Abrir →</span></div></a>
+    <a class="card" href="#gene" data-go="gene"><div class="thumb"><svg viewBox="0 0 160 80" aria-hidden="true">
+      <line x1="6" y1="34" x2="154" y2="34" stroke="var(--old)" stroke-width="3"/>
+      <rect x="14" y="24" width="20" height="20" rx="3" fill="var(--new)"/><rect x="34" y="24" width="18" height="20" rx="3" fill="var(--ok)"/>
+      <rect x="52" y="24" width="28" height="20" rx="3" fill="var(--old)"/><rect x="80" y="24" width="28" height="20" rx="3" fill="var(--prot)"/><rect x="108" y="24" width="28" height="20" rx="3" fill="var(--old)"/><rect x="136" y="24" width="12" height="20" rx="3" fill="var(--muted)"/>
+      <ellipse cx="66" cy="18" rx="13" ry="8" fill="var(--accent)"/>
+      <line x1="52" y1="60" x2="92" y2="60" stroke="var(--rna)" stroke-width="5" stroke-linecap="round"/></svg></div>
+      <div class="body"><span class="tag">simulação · animação</span><h3>Estrutura do gene: procarionte e eucarionte</h3><p>Promotor, operador, éxon, íntron e terminador: veja o que cada um faz.</p><span class="go">Abrir →</span></div></a>
   </div>
 </section>
 
@@ -535,17 +551,99 @@ summary{cursor:pointer;font-weight:700;min-height:28px}
   </div>
 </section>
 
+<!-- ============ 7. GENE ============ -->
+<section id="sec-gene" hidden>
+  <h2>Estrutura do gene: procarionte e eucarionte</h2>
+  <p class="lede">Acompanhe a RNA polimerase passando pelo gene, do promotor ao terminador. Toque em um termo para ver o que ele significa, com a frase para a prova e a comparação com uma receita.</p>
+  <div class="controls" style="margin:0 0 12px">
+    <div class="seg" role="group" aria-label="Tipo de célula">
+      <button data-ge="pro">Procarionte</button>
+      <button data-ge="euk">Eucarionte</button>
+    </div>
+  </div>
+  <div class="stage">
+    <div id="ge-draw"></div>
+    <ul class="legend">
+      <li><i style="background:var(--accent)"></i>RNA polimerase</li>
+      <li id="ge-leg-rep"><i style="background:var(--bad)"></i>repressor</li>
+      <li><i style="background:var(--rna)"></i>RNA</li>
+    </ul>
+    <p class="stat" id="ge-stat"></p>
+  </div>
+  <p class="fb" id="ge-fb" aria-live="polite"></p>
+  <div class="controls">
+    <button class="btn" id="ge-prev">← Anterior</button>
+    <button class="btn pri" id="ge-next">Próximo →</button>
+    <button class="btn pri" id="ge-auto">▶ Assistir animação</button>
+    <button class="btn" id="ge-reset">Recomeçar</button>
+  </div>
+  <div class="controls">
+    <div class="chips" id="ge-chips" role="group" aria-label="Termos"></div>
+  </div>
+
+  <div class="explain">
+    <h3>O que você está vendo</h3>
+    <p>Um gene é um trecho de DNA com a informação para produzir uma proteína ou um RNA. Na transcrição, a enzima RNA polimerase copia essa informação para uma molécula de RNA. As regiões em volta do gene não viram proteína: elas avisam onde a cópia começa, onde termina e se o gene deve ser copiado muito, pouco ou nada.</p>
+    <p>Pense no DNA como um livro de receitas. Cada gene é uma receita, a RNA polimerase é a copista e o RNA é a cópia que sai do livro. Use a receita para lembrar e a definição para escrever na prova.</p>
+
+    <h3>Como escrever na prova</h3>
+    <ul class="gloss">
+      <li><b>Gene</b>: sequência de DNA que contém a informação para produzir uma proteína ou um RNA. <span class="rec">Receita: uma receita do livro.</span></li>
+      <li><b>Transcrição</b>: processo em que a informação do DNA é copiada para uma molécula de RNA. <span class="rec">Receita: fazer a cópia da receita.</span></li>
+      <li><b>RNA polimerase</b>: enzima que realiza a transcrição, sintetizando o RNA a partir do DNA. <span class="rec">Receita: a copista.</span></li>
+      <li><b>Promotor</b>: sequência de DNA onde a RNA polimerase se liga para iniciar a transcrição. <span class="rec">Receita: a marcação "comece a copiar aqui".</span></li>
+      <li><b>Terminador</b>: sequência de DNA que sinaliza o fim da transcrição. <span class="rec">Receita: o ponto final.</span></li>
+      <li><b>Operador</b>: sequência de DNA dos procariontes, junto ao promotor, onde o repressor se liga para controlar a transcrição do óperon. <span class="rec">Receita: o cadeado.</span></li>
+      <li><b>Repressor</b>: proteína reguladora que se liga ao operador e impede a transcrição. <span class="rec">Receita: quem tranca o cadeado.</span></li>
+      <li><b>Gene regulador</b>: gene que codifica a proteína repressora. <span class="rec">Receita: a receita que ensina a fazer o cadeado.</span></li>
+      <li><b>Óperon</b>: conjunto de genes vizinhos, transcritos juntos sob o controle de um único promotor e um único operador. <span class="rec">Receita: várias receitas na mesma folha.</span></li>
+      <li><b>Éxon</b>: sequência codificante do gene, que permanece no RNA maduro. <span class="rec">Receita: o trecho útil.</span></li>
+      <li><b>Íntron</b>: sequência não codificante do gene, removida durante o processamento do RNA. <span class="rec">Receita: o anúncio no meio do texto.</span></li>
+      <li><b>Splicing</b>: processo de remoção dos íntrons e união dos éxons. <span class="rec">Receita: recortar os anúncios e colar os trechos úteis.</span></li>
+      <li><b>Enhancer (acentuador)</b>: sequência reguladora que aumenta a taxa de transcrição e pode estar distante do gene. <span class="rec">Receita: aumentar o volume.</span></li>
+      <li><b>Silencer (silenciador)</b>: sequência reguladora que diminui a taxa de transcrição. <span class="rec">Receita: abaixar o volume.</span></li>
+      <li><b>TATA box</b>: sequência conservada do promotor eucarionte, rica em T e A, que orienta o início da transcrição.</li>
+      <li><b>Caixas −10 (Pribnow) e −35</b>: sequências conservadas do promotor procarionte, reconhecidas pela RNA polimerase.</li>
+    </ul>
+
+    <h3>Procarionte e eucarionte lado a lado</h3>
+    <div class="tscroll"><table>
+      <thead><tr><th></th><th>Procarionte</th><th>Eucarionte</th></tr></thead>
+      <tbody>
+        <tr><td><b>Íntrons</b></td><td>Ausentes: genes contínuos</td><td>Presentes: genes interrompidos</td></tr>
+        <tr><td><b>Organização</b></td><td>Vários genes por promotor (óperon)</td><td>Um promotor para cada gene</td></tr>
+        <tr><td><b>RNA mensageiro</b></td><td>Policistrônico: várias proteínas</td><td>Monocistrônico: uma proteína</td></tr>
+        <tr><td><b>Regulação</b></td><td>Simples: operador e repressor</td><td>Complexa: TATA box, elementos proximais e distais, enhancers e silencers</td></tr>
+        <tr><td><b>Processamento</b></td><td>Praticamente nenhum</td><td>Cap 5′, splicing e cauda poli-A</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Resposta modelo</h3>
+    <figure>
+      <p class="model">Em procariontes, os genes são contínuos, sem íntrons, e organizados em óperons, nos quais vários genes são transcritos juntos a partir de um único promotor, com regulação simples feita pelo operador e pelo repressor. Em eucariontes, os genes são interrompidos por íntrons, removidos no splicing, cada gene tem o próprio promotor e a regulação é complexa, envolvendo TATA box, elementos proximais e distais, enhancers e silencers.</p>
+      <figcaption>Para a pergunta "diferencie a estrutura do gene em procariontes e eucariontes".</figcaption>
+    </figure>
+
+    <h3>Pontos para lembrar</h3>
+    <ul>
+      <li>O exemplo clássico é o óperon lac da bactéria <i>E. coli</i>: sem lactose, o repressor fica no operador e os genes ficam desligados. Com lactose, o repressor se solta e os genes que digerem a lactose são transcritos.</li>
+      <li>O promotor e o terminador não viram proteína. Eles são sinais de início e de fim para a RNA polimerase.</li>
+      <li>"Geralmente" faz parte da resposta: nem todo gene bacteriano está em óperon, e os óperons são raros em eucariontes.</li>
+    </ul>
+  </div>
+</section>
+
 </main>
 
 <script>
 (function(){
 "use strict";
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
-const TABS=['inicio','nucleo','cadeia','replicacao','transcricao','traducao','epigenetica'];
-let tlTimer=null,seqTimer=null,epiRaf=0;
+const TABS=['inicio','nucleo','cadeia','replicacao','transcricao','traducao','epigenetica','gene'];
+let tlTimer=null,seqTimer=null,epiRaf=0,geTimer=null;
 const smooth=u=>{u=Math.max(0,Math.min(1,u));return u*u*(3-2*u);};
 function stopSeq(){if(seqTimer){clearTimeout(seqTimer);seqTimer=null;}}
-function stopAll(){stopSeq();if(tlTimer){clearInterval(tlTimer);tlTimer=null;}cancelAnimationFrame(epiRaf);repPause();}
+function stopAll(){stopSeq();if(tlTimer){clearInterval(tlTimer);tlTimer=null;}cancelAnimationFrame(epiRaf);repPause();geStop();}
 
 function show(id,user){
   if(!TABS.includes(id)) id='inicio';
@@ -1023,10 +1121,107 @@ $('#epi-play').addEventListener('click',()=>{cancelAnimationFrame(epiRaf);let t0
 $('#epi-on').addEventListener('click',()=>{cancelAnimationFrame(epiRaf);$('#epi-ac').value=90;$('#epi-me').value=5;epiDraw();});
 $('#epi-off').addEventListener('click',()=>{cancelAnimationFrame(epiRaf);$('#epi-ac').value=10;$('#epi-me').value=90;epiDraw();});
 
+/* ================= 7. GENE ================= */
+const GP={
+  regulador:['Gene regulador','Gene que codifica a proteína repressora, responsável por controlar o óperon.','a receita que ensina a fazer o cadeado.'],
+  promotor:['Promotor','Sequência de DNA onde a RNA polimerase se liga para iniciar a transcrição. Em procariontes tem as caixas −10 (Pribnow) e −35.','a marcação "comece a copiar aqui".'],
+  operador:['Operador','Sequência de DNA junto ao promotor onde o repressor se liga. Com o repressor ligado, a RNA polimerase não avança.','o cadeado.'],
+  gene:['Genes estruturais','Genes do óperon, que codificam proteínas de função relacionada. São transcritos juntos em um único RNA mensageiro policistrônico.','várias receitas na mesma folha.'],
+  terminador:['Terminador','Sequência de DNA que sinaliza o fim da transcrição. Nela a RNA polimerase se solta do DNA.','o ponto final.'],
+  pol:['RNA polimerase','Enzima que realiza a transcrição: sintetiza o RNA usando o DNA como molde.','a copista.'],
+  rep:['Repressor','Proteína reguladora que se liga ao operador e impede a transcrição.','quem tranca o cadeado.'],
+  operon:['Óperon','Conjunto de genes vizinhos, transcritos juntos sob o controle de um único promotor e um único operador.','várias receitas com um só "comece aqui".'],
+  enhancer:['Enhancer e silencer','Sequências reguladoras que podem ficar longe do gene. O enhancer (acentuador) aumenta a taxa de transcrição e o silencer (silenciador) diminui.','o botão de volume.'],
+  promotorE:['Promotor com TATA box','Sequência onde a RNA polimerase se liga para iniciar a transcrição. A TATA box é um trecho conservado, rico em T e A, que orienta o ponto de início.','a marcação "comece a copiar aqui".'],
+  exon:['Éxon','Sequência codificante do gene. Permanece no RNA mensageiro maduro e é traduzida em proteína.','o trecho útil da receita.'],
+  intron:['Íntron','Sequência não codificante do gene. É transcrita, mas removida durante o processamento do RNA.','o anúncio no meio do texto.'],
+  terminadorE:['Terminador','Região que sinaliza o fim da transcrição. Perto dela fica o sinal de poliadenilação, que marca onde entra a cauda poli-A.','o ponto final.'],
+  splicing:['Splicing','Processo de remoção dos íntrons e união dos éxons, que transforma o pré-RNA mensageiro em RNA mensageiro maduro.','recortar os anúncios e colar os trechos úteis.']
+};
+const GM={
+  pro:{x0:146,chips:['promotor','operador','gene','terminador','regulador','rep','pol','operon'],
+    blocks:[[10,44,'gene regulador','var(--phos)','regulador',8,'start'],[78,34,'promotor','var(--new)','promotor'],[112,34,'operador','var(--ok)','operador'],[146,52,'gene A','var(--old)','gene'],[198,52,'gene B','var(--prot)','gene'],[250,52,'gene C','var(--old)','gene'],[302,26,'terminador','var(--muted)','terminador',332,'end']],
+    rna:[[146,52,0],[198,52,0],[250,52,0]],
+    steps:[
+      {px:95,po:0,r:0,rep:'reg',t:'O gene regulador produz o repressor',s:'O gene regulador codifica a proteína repressora, que vai controlar o óperon.',c:'a receita do cadeado foi usada e o cadeado ficou pronto.'},
+      {px:95,po:1,r:0,rep:'op',t:'Repressor ligado ao operador',s:'O repressor se liga ao operador e impede a RNA polimerase de avançar. O óperon fica desligado.',c:'o cadeado está trancado e a copista não passa.'},
+      {px:95,po:1,r:0,rep:'off',t:'Operador livre',s:'O repressor se solta do operador. A RNA polimerase, ligada ao promotor, fica livre para iniciar a transcrição.',c:'o cadeado abriu e a copista está no "comece aqui".'},
+      {px:302,po:1,r:1,rep:'off',t:'Transcrição do óperon',s:'A RNA polimerase transcreve os genes A, B e C em sequência e forma um único RNA mensageiro policistrônico.',c:'a copista copia três receitas de uma vez, na mesma folha.',l:'RNAm policistrônico: genes A, B e C'},
+      {px:345,po:0,r:1,rep:'off',t:'Terminador',s:'No terminador, a RNA polimerase se solta do DNA e a transcrição termina. Como não há íntrons, não ocorre splicing.',c:'chegou ao ponto final e a cópia já sai pronta para uso.',l:'RNAm pronto, sem processamento'}
+    ]},
+  euk:{x0:104,chips:['enhancer','promotorE','exon','intron','terminadorE','pol','splicing'],
+    blocks:[[10,28,'enhancer','var(--phos)','enhancer',8,'start'],[70,34,'promotor','var(--new)','promotorE'],[104,44,'éxon 1','var(--old)','exon'],[148,36,'íntron','var(--nfill)','intron'],[184,44,'éxon 2','var(--old)','exon'],[228,36,'íntron','var(--nfill)','intron'],[264,40,'éxon 3','var(--old)','exon'],[304,24,'terminador','var(--muted)','terminadorE',332,'end']],
+    rna:[[104,44,0],[148,36,-1],[184,44,-36],[228,36,-1],[264,40,-72]],
+    steps:[
+      {px:87,po:0,r:0,hi:'enhancer',t:'Enhancer ativado',s:'O enhancer é uma sequência reguladora distal: mesmo longe do gene, aumenta a taxa de transcrição.',c:'o volume foi aumentado e a receita vai ser muito copiada.'},
+      {px:87,po:1,r:0,t:'Ligação ao promotor',s:'A RNA polimerase se liga ao promotor, na região da TATA box, que marca o ponto de início da transcrição.',c:'a copista achou o "comece aqui".'},
+      {px:304,po:1,r:1,t:'Transcrição',s:'A RNA polimerase transcreve éxons e íntrons até o terminador e forma o pré-RNA mensageiro (transcrito primário).',c:'a copista copia tudo, inclusive os anúncios do meio.',l:'pré-RNAm: éxons e íntrons'},
+      {px:345,po:0,r:1,sp:1,t:'Splicing',s:'No splicing, os íntrons (não codificantes) são removidos e os éxons (codificantes) são unidos.',c:'os anúncios são recortados e os trechos úteis são colados.',l:'RNAm só com éxons'},
+      {px:345,po:0,r:1,sp:1,fin:1,t:'Cap 5′ e cauda poli-A',s:'Com o cap 5′ e a cauda poli-A, o RNA mensageiro está maduro. Ele é monocistrônico: codifica uma única proteína.',c:'a cópia ganha proteção nas duas pontas e leva uma receita só.',l:'RNAm maduro, monocistrônico'}
+    ]}
+};
+const G7={mode:'pro',i:0,sel:null};
+function geStop(){if(geTimer){clearInterval(geTimer);geTimer=null;}const b=$('#ge-auto');if(b)b.textContent='▶ Assistir animação';}
+function geBuild(){
+  const m=GM[G7.mode];
+  let s=`<svg viewBox="0 0 340 162" role="img" aria-label="Fita de DNA de um gene ${G7.mode==='pro'?'procarionte':'eucarionte'} com a RNA polimerase">`;
+  s+='<line x1="4" y1="62" x2="336" y2="62" stroke="var(--old)" stroke-width="3"/><text x="4" y="46" class="sm">5′</text><text x="336" y="46" class="sm" text-anchor="end">3′</text>';
+  if(G7.mode==='euk') s+='<rect x="46" y="54" width="16" height="16" fill="var(--stage)"/><text x="54" y="67" text-anchor="middle" class="sm">//</text>';
+  m.blocks.forEach((b,k)=>{
+    s+=`<rect data-k="${b[4]}" tabindex="0" role="button" aria-label="${GP[b[4]][0]}" x="${b[0]}" y="50" width="${b[1]}" height="24" rx="4" fill="${b[3]}" stroke="var(--old)" stroke-width="1"/>`;
+    s+=`<text x="${b[5]||b[0]+b[1]/2}" y="${k%2?106:91}" text-anchor="${b[6]||'middle'}">${b[2]}</text>`;
+  });
+  if(G7.mode==='pro') s+='<rect id="ge-rep" class="mv" data-k="rep" x="112" y="29" width="34" height="17" rx="8.5" fill="var(--bad)" stroke="var(--surface)" stroke-width="1"/>';
+  s+='<ellipse id="ge-pol" class="mv" data-k="pol" cx="0" cy="40" rx="17" ry="11" fill="var(--accent)" stroke="var(--surface)" stroke-width="1.5"/>';
+  s+=`<g id="ge-rna" class="mv" style="transform-origin:${m.x0}px 0px">`;
+  m.rna.forEach((r,k)=>{s+=`<rect class="mv" data-r="${k}" x="${r[0]}" y="126" width="${r[1]}" height="9" fill="var(--rna)" stroke="var(--stage)" stroke-width="1" ${r[2]===-1?'opacity=".55"':''}/>`;});
+  s+='</g>';
+  if(G7.mode==='euk') s+='<g id="ge-fin" class="mv"><rect x="93" y="124" width="10" height="13" rx="3" fill="var(--rna)"/><text x="98" y="120" text-anchor="middle" class="sm">cap</text><text x="236" y="135" style="fill:var(--rna);font-family:var(--f-mono);font-weight:600">AAAA</text></g>';
+  s+='<text id="ge-rl" x="'+(G7.mode==='euk'?93:m.x0)+'" y="154"></text></svg>';
+  $('#ge-draw').innerHTML=s;
+  $('#ge-chips').innerHTML=m.chips.map(k=>`<button data-k="${k}">${GP[k][0]}</button>`).join('');
+  $('#ge-leg-rep').hidden=G7.mode!=='pro';
+  $$('[data-ge]').forEach(b=>{const on=b.dataset.ge===G7.mode;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on?'true':'false');});
+  geApply();
+}
+function geApply(){
+  const m=GM[G7.mode],st=m.steps[G7.i],d=$('#ge-draw');
+  const pol=$('#ge-pol',d);pol.style.transform=`translateX(${st.px}px)`;pol.style.opacity=st.po;
+  $('#ge-rna',d).style.transform=`scaleX(${st.r?1:0})`;
+  const rp=$('#ge-rep',d);
+  if(rp){rp.style.transform=st.rep==='reg'?'translate(-97px,0px)':st.rep==='off'?'translate(0px,-21px)':'none';rp.style.opacity=st.rep==='off'?.35:1;}
+  m.rna.forEach((r,k)=>{const e=$(`[data-r="${k}"]`,d);if(r[2]===-1)e.style.opacity=st.sp?0:.55;else e.style.transform=st.sp?`translateX(${r[2]}px)`:'none';});
+  const fin=$('#ge-fin',d);if(fin)fin.style.opacity=st.fin?1:0;
+  $('#ge-rl',d).textContent=st.l||'';
+  const hi=G7.sel||st.hi||null;
+  $$('[data-k]',d).forEach(e=>e.classList.toggle('sel',e.dataset.k===hi));
+  $$('#ge-chips button').forEach(b=>b.classList.toggle('on',b.dataset.k===G7.sel));
+  $('#ge-stat').textContent=`Passo ${G7.i+1} de ${m.steps.length}`;
+  const x=G7.sel?GP[G7.sel]:null;
+  $('#ge-fb').innerHTML=x?`<b>${x[0]}.</b> ${x[1]}<span class="rec">Na receita: ${x[2]}</span>`:`<b>${st.t}.</b> ${st.s}<span class="rec">Na receita: ${st.c}</span>`;
+  $('#ge-prev').disabled=G7.i===0;$('#ge-next').disabled=G7.i===m.steps.length-1;
+}
+function geGo(n){G7.i=Math.max(0,Math.min(GM[G7.mode].steps.length-1,n));G7.sel=null;geApply();}
+function gePick(k){if(!GP[k])return;geStop();G7.sel=G7.sel===k?null:k;geApply();}
+$$('[data-ge]').forEach(b=>b.addEventListener('click',()=>{geStop();G7.mode=b.dataset.ge;G7.i=0;G7.sel=null;geBuild();}));
+$('#ge-prev').addEventListener('click',()=>{geStop();geGo(G7.i-1);});
+$('#ge-next').addEventListener('click',()=>{geStop();geGo(G7.i+1);});
+$('#ge-reset').addEventListener('click',()=>{geStop();geGo(0);});
+$('#ge-auto').addEventListener('click',()=>{
+  if(geTimer){geStop();return;}
+  const n=GM[G7.mode].steps.length;
+  geGo(G7.i>=n-1?0:G7.i);
+  $('#ge-auto').textContent='❚❚ Pausar';
+  geTimer=setInterval(()=>{if(G7.i>=n-1){geStop();return;}geGo(G7.i+1);},3200);
+});
+$('#ge-chips').addEventListener('click',e=>{const b=e.target.closest('button');if(b)gePick(b.dataset.k);});
+$('#ge-draw').addEventListener('click',e=>{const t=e.target.closest('[data-k]');if(t)gePick(t.dataset.k);});
+$('#ge-draw').addEventListener('keydown',e=>{if(e.key!=='Enter'&&e.key!==' ')return;const t=e.target.closest('[data-k]');if(t){e.preventDefault();const k=t.dataset.k;gePick(k);const n=$(`#ge-draw [data-k="${k}"]`);if(n)n.focus();}});
+
 /* ================= início ================= */
 nucRender();cadReset();
 repDraw();repFb('O DNA está fechado em dupla hélice. Qual enzima age primeiro?','');hipDraw('semi');
-trReset();tlLoad();epiDraw();
+trReset();tlLoad();epiDraw();geBuild();
 let first=location.hash.slice(1);
 
 show(first,false);
