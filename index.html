@@ -1,0 +1,1037 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Simulações interativas de biologia molecular em português: núcleo, nucleotídeos, replicação, transcrição, tradução e epigenética.">
+<style>:root{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Laboratório do DNA</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: caderno de laboratório no celular. Abas fixas no topo, uma bancada (simulação) por aba, explicação logo abaixo. */
+:root{
+  --bg:#edf3f4; --surface:#ffffff; --stage:#f6fafa; --ink:#14252d; --muted:#53676f; --line:#cddadd;
+  --accent:#0a6c84; --accent-ink:#ffffff; --accent-soft:#d8ecf0;
+  --ok:#1a7446; --ok-soft:#dcf1e4; --bad:#b0362a; --bad-soft:#f9e1dd;
+  --old:#27566b; --new:#d9781c; --rna:#a83a88; --prot:#6a55c2; --phos:#f0c24b; --nfill:#e3eef0;
+  --bA:#bfe6c8; --bT:#f6c4b8; --bU:#f3d1a0; --bC:#bcd7f5; --bG:#f1e29a; --base-ink:#14252d;
+  --f-display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1a1f; --surface:#17262d; --stage:#132127; --ink:#e6eef0; --muted:#9db0b7; --line:#2d4149;
+    --accent:#5cc3da; --accent-ink:#06222a; --accent-soft:#1d3a44;
+    --ok:#62cf95; --ok-soft:#173527; --bad:#f08a7d; --bad-soft:#3d1f1b;
+    --old:#7fb6cc; --new:#f0a44e; --rna:#e283c6; --prot:#a898f0; --phos:#d9ab3a; --nfill:#1b2e36;
+    --bA:#7fcf97; --bT:#f09a86; --bU:#eab766; --bC:#86b8ee; --bG:#e3cf62; --base-ink:#0f1a1f;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f1a1f; --surface:#17262d; --stage:#132127; --ink:#e6eef0; --muted:#9db0b7; --line:#2d4149;
+  --accent:#5cc3da; --accent-ink:#06222a; --accent-soft:#1d3a44;
+  --ok:#62cf95; --ok-soft:#173527; --bad:#f08a7d; --bad-soft:#3d1f1b;
+  --old:#7fb6cc; --new:#f0a44e; --rna:#e283c6; --prot:#a898f0; --phos:#d9ab3a; --nfill:#1b2e36;
+  --bA:#7fcf97; --bT:#f09a86; --bU:#eab766; --bC:#86b8ee; --bG:#e3cf62; --base-ink:#0f1a1f;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55;margin:0}
+.wrap{max-width:760px;margin-inline:auto;padding-inline:16px}
+header.top{padding-block:22px 10px}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(1.7rem,6vw,2.3rem);line-height:1.05;margin:0;letter-spacing:-.01em}
+header.top p{margin:6px 0 0;color:var(--muted);max-width:52ch}
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.tabrow{display:flex;gap:6px;overflow-x:auto;padding-block:8px;scrollbar-width:none}
+.tabrow::-webkit-scrollbar{display:none}
+.tab{flex:none;font:inherit;font-size:.92rem;color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:999px;padding:8px 14px;min-height:40px;cursor:pointer}
+.tab.on{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:700}
+main{padding-block:18px 48px}
+section>h2{font-family:var(--f-display);font-size:1.5rem;line-height:1.15;margin:0 0 4px;text-wrap:balance}
+.lede{margin:0 0 14px;color:var(--muted);max-width:60ch}
+.stage{background:var(--stage);border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.stage svg{display:block;width:100%;height:auto;max-width:480px;margin-inline:auto}
+svg text{font-family:var(--f-body);font-size:11px;fill:var(--ink)}
+svg text.bl{font-family:var(--f-mono);font-size:13px;font-weight:600;fill:var(--base-ink)}
+svg text.sm{font-size:9.5px;fill:var(--muted)}
+.controls{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
+button.btn,.seg button{font:inherit;min-height:44px;padding:8px 14px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+button.btn.pri{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+button.btn:disabled{opacity:.45;cursor:not-allowed}
+button.btn.done{background:var(--ok-soft);border-color:var(--ok);color:var(--ink)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;border-radius:0;background:transparent;color:var(--muted)}
+.seg button.on{background:var(--accent-soft);color:var(--ink);font-weight:700}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.basebtns{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%}
+.basebtns button{font-family:var(--f-mono);font-size:1.25rem;font-weight:600;min-height:52px;border-radius:10px;border:1px solid var(--line);color:var(--base-ink);cursor:pointer}
+.bA{background:var(--bA);fill:var(--bA)} .bT{background:var(--bT);fill:var(--bT)} .bU{background:var(--bU);fill:var(--bU)} .bC{background:var(--bC);fill:var(--bC)} .bG{background:var(--bG);fill:var(--bG)}
+.fb{margin:12px 0 0;padding:10px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line);min-height:44px}
+.fb.ok{background:var(--ok-soft);border-color:var(--ok)}
+.fb.bad{background:var(--bad-soft);border-color:var(--bad)}
+.fb b{font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{font:inherit;font-size:.9rem;padding:7px 12px;min-height:38px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.chips button.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.85rem;color:var(--muted);margin:0;padding:0;list-style:none}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.stat{font-size:.9rem;color:var(--muted);margin:0;font-variant-numeric:tabular-nums}
+.explain{margin-top:26px;display:flex;flex-direction:column;gap:14px;max-width:65ch}
+.explain h3{font-family:var(--f-display);font-size:1.12rem;margin:8px 0 -6px}
+.explain p,.explain ul{margin:0}
+.explain ul{padding-left:1.15em;display:flex;flex-direction:column;gap:6px}
+figure{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px}
+figure svg{display:block;width:100%;height:auto;max-width:420px;margin-inline:auto}
+figcaption{font-size:.85rem;color:var(--muted);margin-top:8px}
+.tscroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:700;font-size:.8rem;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+a.card{display:flex;flex-direction:column;color:var(--ink);text-decoration:none;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;min-width:0}
+a.card:hover{border-color:var(--accent)}
+.card .thumb{background:var(--stage);border-bottom:1px solid var(--line);padding:10px}
+.card .thumb svg{display:block;width:100%;height:auto;max-height:120px}
+.card .body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:4px;flex:1}
+.card .tag{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.card h3{font-family:var(--f-display);font-size:1.12rem;line-height:1.2;margin:0}
+.card p{margin:0;color:var(--muted);font-size:.92rem}
+.card .go{color:var(--accent);font-weight:700;margin-top:auto;padding-top:6px;text-align:right}
+/* núcleo */
+#nuc-svg [data-part]{cursor:pointer;transition:opacity .2s}
+#nuc-svg.has-sel [data-part]:not(.sel){opacity:.28}
+.info h4{margin:0 0 2px;font-family:var(--f-display);font-size:1.05rem}
+.info p{margin:0}
+/* cadeia */
+@keyframes pop{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+@keyframes ppi{0%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-20px)}}
+.pop{animation:pop .35s ease-out}
+.ppi{animation:ppi 1.5s ease-in .2s forwards}
+/* transcrição */
+.grid18{display:grid;grid-template-columns:repeat(18,minmax(0,1fr));gap:1px;max-width:432px;width:100%;margin-inline:auto}
+.grid18 .cell{font-family:var(--f-mono);font-size:13px;font-weight:600;text-align:center;padding:5px 0;border-radius:3px;color:var(--base-ink)}
+.grid18 .cell.dim{opacity:.45}
+.grid18 .cell.empty{background:transparent;border:1px dashed var(--line);color:transparent}
+.grid18 .cell.cur{outline:2px solid var(--accent);outline-offset:0}
+.grid18 .span{grid-column:span 6;font-size:.72rem;text-align:center;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);border-bottom:2px solid var(--line);padding-bottom:2px}
+.grid18 .span.intr{border-bottom-style:dashed}
+.rowlab{font-size:.74rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:4px 0 0;max-width:432px;width:100%;margin-inline:auto}
+.mol{display:flex;flex-wrap:wrap;gap:4px;align-items:center;justify-content:center}
+.mol span{font-family:var(--f-mono);font-size:13px;font-weight:600;padding:6px 8px;border-radius:6px;border:2px solid var(--rna);background:var(--surface);color:var(--ink)}
+.mol span.x{border-style:dashed;border-color:var(--muted);color:var(--muted)}
+.mol span.cap,.mol span.tail{background:var(--rna);color:var(--surface)}
+.place{font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;font-weight:700;text-align:center;color:var(--muted);margin:0}
+.flow{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:0;align-items:stretch}
+.flow li{border:1px solid var(--line);border-radius:10px;padding:8px 12px;background:var(--stage)}
+.flow li.step{border:0;background:transparent;padding:4px 12px;color:var(--muted);font-size:.88rem}
+.flow li.step::before{content:"↓ "}
+/* tradução */
+.inrow{display:flex;gap:8px;flex-wrap:wrap}
+.inrow input{flex:1 1 200px;min-width:0;font-family:var(--f-mono);font-size:15px;padding:10px;min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);text-transform:uppercase}
+.strip{display:flex;gap:4px;overflow-x:auto;padding:6px 2px 10px;align-items:center}
+.strip span{flex:none;font-family:var(--f-mono);font-size:14px;font-weight:600;padding:8px 7px;border-radius:7px;background:var(--surface);border:1px solid var(--line);color:var(--ink)}
+.strip span.end{border:0;background:transparent;color:var(--muted);padding-inline:2px}
+.strip span.utr{opacity:.5}
+.strip span.read{background:var(--accent-soft)}
+.strip span.now{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.strip span.stop.now{background:var(--bad);border-color:var(--bad);color:var(--surface)}
+.trna{font-family:var(--f-mono);font-size:.9rem;margin:0;min-height:1.5em}
+.chain{display:flex;flex-wrap:wrap;gap:4px;align-items:center;min-height:38px}
+.chain span{font-size:.9rem;font-weight:700;padding:6px 10px;border-radius:999px;background:var(--prot);color:var(--surface)}
+.chain span.t{background:transparent;color:var(--muted);font-weight:400;padding-inline:2px}
+details{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+summary{cursor:pointer;font-weight:700;min-height:28px}
+.ct{font-family:var(--f-mono);font-size:11.5px;line-height:1.5;min-width:340px}
+.ct td,.ct th{padding:5px 6px;white-space:nowrap}
+.ct mark{background:var(--accent);color:var(--accent-ink);border-radius:3px;padding:0 2px}
+.ct span{display:block}
+/* epigenética */
+.slider{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center;width:100%}
+.slider label{font-weight:700}
+.slider output{font-variant-numeric:tabular-nums;color:var(--muted)}
+.slider input{grid-column:1/-1;width:100%;accent-color:var(--accent);min-height:32px}
+.meter{height:14px;border-radius:999px;background:var(--surface);border:1px solid var(--line);overflow:hidden}
+.meter i{display:block;height:100%;background:var(--rna);width:0;transition:width .25s}
+.seqline{font-family:var(--f-mono);font-size:.82rem;color:var(--muted);margin:0;overflow-wrap:anywhere}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}.ppi{opacity:0}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <h1>Laboratório do DNA</h1>
+    <p>Seis simulações para mexer e entender, do núcleo à epigenética. A explicação fica logo abaixo de cada uma.</p>
+  </header>
+</div>
+
+<nav class="tabs" aria-label="Simulações">
+  <div class="wrap"><div class="tabrow" role="tablist">
+    <button class="tab" role="tab" data-tab="inicio">Início</button>
+    <button class="tab" role="tab" data-tab="nucleo">Núcleo</button>
+    <button class="tab" role="tab" data-tab="cadeia">Nucleotídeos</button>
+    <button class="tab" role="tab" data-tab="replicacao">Replicação</button>
+    <button class="tab" role="tab" data-tab="transcricao">Transcrição</button>
+    <button class="tab" role="tab" data-tab="traducao">Tradução</button>
+    <button class="tab" role="tab" data-tab="epigenetica">Epigenética</button>
+  </div></div>
+</nav>
+
+<main class="wrap">
+
+
+<!-- ============ INÍCIO ============ -->
+<section id="sec-inicio">
+  <h2>Escolha uma simulação</h2>
+  <p class="lede">DNA e proteínas · 6 simulações. Em cada uma você pode mexer passo a passo ou assistir à animação.</p>
+  <div class="cards">
+    <a class="card" href="#nucleo" data-go="nucleo"><div class="thumb"><svg viewBox="0 0 160 80" aria-hidden="true">
+      <path d="M118 22A46 46 0 0 1 118 58" fill="none" stroke="var(--muted)" stroke-width="3" stroke-linecap="round"/><path d="M126 18A54 54 0 0 1 126 62" fill="none" stroke="var(--muted)" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="78" cy="40" r="33" fill="var(--nfill)" stroke="var(--ink)" stroke-width="2"/><circle cx="78" cy="40" r="29" fill="none" stroke="var(--ink)" stroke-width="1.5"/>
+      <circle cx="68" cy="46" r="10" fill="var(--rna)"/><ellipse cx="92" cy="26" rx="7" ry="4" fill="var(--old)"/><ellipse cx="96" cy="52" rx="4" ry="7" fill="var(--old)"/><ellipse cx="62" cy="22" rx="6" ry="4" fill="var(--old)"/>
+      <ellipse cx="78" cy="9" rx="3" ry="4.5" fill="var(--new)"/><ellipse cx="109" cy="40" rx="4.5" ry="3" fill="var(--new)"/><ellipse cx="78" cy="71" rx="3" ry="4.5" fill="var(--new)"/><ellipse cx="47" cy="40" rx="4.5" ry="3" fill="var(--new)"/></svg></div>
+      <div class="body"><span class="tag">simulação</span><h3>Estrutura do núcleo</h3><p>Toque nas partes do núcleo e compare com o nucleoide de uma bactéria.</p><span class="go">Abrir →</span></div></a>
+    <a class="card" href="#cadeia" data-go="cadeia"><div class="thumb"><svg viewBox="0 0 160 80" aria-hidden="true">
+      <g stroke="var(--ink)" stroke-width="1.5"><line x1="22" y1="20" x2="34" y2="30"/><line x1="48" y1="42" x2="62" y2="20"/><line x1="62" y1="20" x2="74" y2="30"/><line x1="88" y1="42" x2="102" y2="20"/><line x1="102" y1="20" x2="114" y2="30"/>
+      <circle cx="22" cy="20" r="7" fill="var(--phos)"/><circle cx="62" cy="20" r="7" fill="var(--phos)"/><circle cx="102" cy="20" r="7" fill="var(--phos)"/>
+      <polygon points="44,22 56,31 52,44 36,44 32,31" fill="var(--surface)"/><polygon points="84,22 96,31 92,44 76,44 72,31" fill="var(--surface)"/><polygon points="124,22 136,31 132,44 116,44 112,31" fill="var(--surface)"/></g>
+      <rect x="33" y="47" width="22" height="24" rx="4" fill="var(--bA)"/><rect x="73" y="47" width="22" height="24" rx="4" fill="var(--bC)"/><rect x="113" y="47" width="22" height="24" rx="4" fill="var(--bT)"/></svg></div>
+      <div class="body"><span class="tag">simulação</span><h3>Formação da cadeia de nucleotídeos</h3><p>Monte uma fita de DNA ou RNA e veja a ligação fosfodiéster se formar.</p><span class="go">Abrir →</span></div></a>
+    <a class="card" href="#replicacao" data-go="replicacao"><div class="thumb"><svg viewBox="0 0 160 80" aria-hidden="true">
+      <path d="M8 16H64C84 16 88 36 104 36H152" fill="none" stroke="var(--old)" stroke-width="3.5" stroke-linecap="round"/><path d="M8 64H64C84 64 88 44 104 44H152" fill="none" stroke="var(--old)" stroke-width="3.5" stroke-linecap="round"/>
+      <g stroke="var(--line)" stroke-width="2"><line x1="112" y1="37" x2="112" y2="43"/><line x1="122" y1="37" x2="122" y2="43"/><line x1="132" y1="37" x2="132" y2="43"/><line x1="142" y1="37" x2="142" y2="43"/></g>
+      <line x1="10" y1="24" x2="66" y2="24" stroke="var(--new)" stroke-width="3.5" stroke-linecap="round"/><line x1="10" y1="56" x2="30" y2="56" stroke="var(--new)" stroke-width="3.5" stroke-linecap="round"/><line x1="38" y1="56" x2="58" y2="56" stroke="var(--new)" stroke-width="3.5" stroke-linecap="round"/><line x1="58" y1="56" x2="66" y2="56" stroke="var(--rna)" stroke-width="3.5" stroke-linecap="round"/>
+      <circle cx="98" cy="40" r="8" fill="var(--accent)"/></svg></div>
+      <div class="body"><span class="tag">simulação · animação</span><h3>Replicação do DNA</h3><p>Aplique as enzimas na ordem certa ou assista à forquilha se abrindo.</p><span class="go">Abrir →</span></div></a>
+    <a class="card" href="#transcricao" data-go="transcricao"><div class="thumb"><svg viewBox="0 0 160 80" aria-hidden="true">
+      <path d="M8 30H50C60 30 62 18 80 18S100 30 110 30H152" fill="none" stroke="var(--old)" stroke-width="3.5" stroke-linecap="round"/><path d="M8 38H50C60 38 62 50 80 50S100 38 110 38H152" fill="none" stroke="var(--old)" stroke-width="3.5" stroke-linecap="round"/>
+      <ellipse cx="80" cy="34" rx="20" ry="13" fill="var(--accent)" opacity=".85"/>
+      <path d="M78 42C70 50 60 56 44 60S24 68 14 70" fill="none" stroke="var(--rna)" stroke-width="3.5" stroke-linecap="round"/></svg></div>
+      <div class="body"><span class="tag">simulação · animação</span><h3>Transcrição e processamento do RNA</h3><p>Sintetize o pré-mRNA, coloque cap e cauda, faça o splicing e exporte.</p><span class="go">Abrir →</span></div></a>
+    <a class="card" href="#traducao" data-go="traducao"><div class="thumb"><svg viewBox="0 0 160 80" aria-hidden="true">
+      <ellipse cx="80" cy="44" rx="30" ry="15" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2"/>
+      <line x1="8" y1="56" x2="152" y2="56" stroke="var(--rna)" stroke-width="3.5" stroke-linecap="round"/>
+      <g fill="var(--rna)"><rect x="20" y="58" width="4" height="9"/><rect x="30" y="58" width="4" height="9"/><rect x="40" y="58" width="4" height="9"/><rect x="62" y="58" width="4" height="9"/><rect x="72" y="58" width="4" height="9"/><rect x="82" y="58" width="4" height="9"/><rect x="92" y="58" width="4" height="9"/><rect x="116" y="58" width="4" height="9"/><rect x="126" y="58" width="4" height="9"/><rect x="136" y="58" width="4" height="9"/></g>
+      <g fill="var(--prot)"><circle cx="80" cy="30" r="6"/><circle cx="70" cy="22" r="6"/><circle cx="58" cy="17" r="6"/><circle cx="45" cy="15" r="6"/><circle cx="32" cy="17" r="6"/></g></svg></div>
+      <div class="body"><span class="tag">simulação · animação</span><h3>Tradução: do mRNA à proteína</h3><p>O ribossomo lê códon por códon. Digite o seu mRNA e veja a proteína.</p><span class="go">Abrir →</span></div></a>
+    <a class="card" href="#epigenetica" data-go="epigenetica"><div class="thumb"><svg viewBox="0 0 160 80" aria-hidden="true">
+      <line x1="6" y1="44" x2="154" y2="44" stroke="var(--old)" stroke-width="3"/>
+      <g stroke="var(--ok)" stroke-width="2"><line x1="34" y1="31" x2="38" y2="20"/><line x1="66" y1="31" x2="70" y2="20"/></g><circle cx="38" cy="17" r="4" fill="var(--ok)"/><circle cx="70" cy="17" r="4" fill="var(--ok)"/>
+      <g stroke="var(--bad)" stroke-width="2"><line x1="109" y1="46" x2="109" y2="62"/><line x1="131" y1="46" x2="131" y2="62"/></g><circle cx="109" cy="65" r="4.5" fill="var(--bad)"/><circle cx="131" cy="65" r="4.5" fill="var(--bad)"/>
+      <g fill="var(--prot)" stroke="var(--old)" stroke-width="3"><circle cx="34" cy="44" r="13"/><circle cx="66" cy="44" r="13"/><circle cx="98" cy="44" r="13"/><circle cx="120" cy="44" r="13"/><circle cx="142" cy="44" r="13"/></g></svg></div>
+      <div class="body"><span class="tag">simulação · animação</span><h3>Epigenética e controle dos genes</h3><p>Acetile e metile a cromatina e veja o gene ligar ou desligar.</p><span class="go">Abrir →</span></div></a>
+  </div>
+</section>
+
+<!-- ============ 1. NÚCLEO ============ -->
+<section id="sec-nucleo" hidden>
+  <h2>Estrutura do núcleo</h2>
+  <p class="lede">Toque em uma parte do desenho, ou em um nome da lista, para ver o que ela é e o que faz. Depois troque para a célula procariótica e compare.</p>
+  <div class="stage">
+    <div class="seg" id="nuc-seg" style="align-self:center">
+      <button data-cel="euc" class="on">Eucariótica</button>
+      <button data-cel="pro">Procariótica</button>
+    </div>
+    <div id="nuc-draw"></div>
+    <div class="chips" id="nuc-chips"></div>
+  </div>
+  <div class="fb info" id="nuc-info" aria-live="polite"></div>
+  <div class="controls">
+    <button class="btn pri" id="nuc-quiz">Me teste</button>
+    <p class="stat" id="nuc-score"></p>
+  </div>
+
+  <div class="explain">
+    <h3>O que você está vendo</h3>
+    <p>O núcleo é o compartimento que guarda o DNA nas células eucarióticas. Ele é fechado pelo envoltório nuclear, formado por duas membranas. A membrana externa continua no retículo endoplasmático rugoso, e por isso o desenho mostra os dois ligados.</p>
+    <p>O envoltório não é uma parede fechada. Os poros nucleares atravessam as duas membranas e selecionam o que passa: proteínas entram, RNAs e subunidades de ribossomo saem.</p>
+    <p>Dentro do núcleo, o DNA está associado a proteínas e forma a cromatina. Onde ela está frouxa (eucromatina) os genes podem ser lidos. Onde está condensada (heterocromatina) eles ficam, em geral, desligados. Essa diferença volta na aba Epigenética.</p>
+    <h3>Núcleo e nucleoide</h3>
+    <div class="tscroll"><table>
+      <thead><tr><th></th><th>Eucarionte</th><th>Procarionte</th></tr></thead>
+      <tbody>
+        <tr><td>Onde fica o DNA</td><td>No núcleo, cercado pelo envoltório nuclear</td><td>No nucleoide, uma região do citoplasma sem membrana</td></tr>
+        <tr><td>Forma do DNA</td><td>Várias moléculas lineares (cromossomos)</td><td>Em geral uma molécula circular, mais plasmídeos</td></tr>
+        <tr><td>Proteínas associadas</td><td>Histonas, formando cromatina</td><td>Sem histonas típicas; outras proteínas compactam o DNA</td></tr>
+        <tr><td>Transcrição e tradução</td><td>Separadas: transcrição no núcleo, tradução no citoplasma</td><td>Juntas, no mesmo compartimento e ao mesmo tempo</td></tr>
+      </tbody>
+    </table></div>
+    <h3>Pontos para lembrar</h3>
+    <ul>
+      <li>O núcleo tem quatro elementos que sempre são cobrados: envoltório com poros, nucleoplasma, nucléolo e cromatina.</li>
+      <li>O nucléolo não tem membrana. É onde o RNA ribossômico é feito e os ribossomos começam a ser montados.</li>
+      <li>Procarionte não tem núcleo. O termo certo para a região do DNA é nucleoide.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ 2. CADEIA ============ -->
+<section id="sec-cadeia" hidden>
+  <h2>Formação da cadeia de nucleotídeos</h2>
+  <p class="lede">Monte uma fita de DNA ou de RNA, um nucleotídeo por vez. Cada um entra pela ponta 3′ e solta um pirofosfato. Ligue a fita molde para treinar o pareamento.</p>
+  <div class="stage">
+    <div id="cad-draw"></div>
+    <ul class="legend">
+      <li><i style="background:var(--phos)"></i>fosfato</li>
+      <li><i style="background:var(--surface);border:1.5px solid var(--ink)"></i><span id="cad-sugar">desoxirribose</span></li>
+      <li><i style="background:var(--bC);border-radius:3px"></i>base nitrogenada</li>
+    </ul>
+    <p class="stat" id="cad-stat"></p>
+  </div>
+  <div class="controls">
+    <div class="seg" id="cad-seg"><button data-t="DNA" class="on">DNA</button><button data-t="RNA">RNA</button></div>
+    <div class="seg" id="cad-molde"><button data-m="0" class="on">Fita livre</button><button data-m="1">Com fita molde</button></div>
+  </div>
+  <div class="controls"><div class="basebtns" id="cad-btns"></div></div>
+  <p class="fb" id="cad-fb" aria-live="polite"></p>
+  <div class="controls"><button class="btn pri" id="cad-play">▶ Assistir animação</button><button class="btn" id="cad-reset">Recomeçar</button></div>
+
+  <div class="explain">
+    <h3>O que você está vendo</h3>
+    <p>Cada nucleotídeo tem três partes: um fosfato, um açúcar de cinco carbonos (pentose) e uma base nitrogenada. Os carbonos do açúcar são numerados de 1′ a 5′. A base se prende ao carbono 1′, o fosfato ao 5′, e o carbono 3′ carrega um grupo OH livre.</p>
+    <figure>
+      <svg viewBox="0 0 340 150" role="img" aria-label="Esquema de um nucleotídeo: fosfato ligado ao carbono 5 linha da pentose, base nitrogenada ligada ao carbono 1 linha e grupo OH no carbono 3 linha">
+        <line x1="88" y1="54" x2="118" y2="58" stroke="var(--ink)" stroke-width="2"/>
+        <line x1="118" y1="58" x2="140" y2="78" stroke="var(--ink)" stroke-width="2"/>
+        <line x1="200" y1="78" x2="232" y2="78" stroke="var(--ink)" stroke-width="2"/>
+        <line x1="151" y1="112" x2="146" y2="130" stroke="var(--ink)" stroke-width="2"/>
+        <line x1="189" y1="112" x2="194" y2="130" stroke="var(--ink)" stroke-width="2"/>
+        <circle cx="70" cy="50" r="20" fill="var(--phos)" stroke="var(--ink)" stroke-width="1.5"/>
+        <text x="70" y="55" text-anchor="middle" class="bl" style="font-size:15px">P</text>
+        <polygon points="170,58 200,78 189,112 151,112 140,78" fill="var(--surface)" stroke="var(--ink)" stroke-width="2"/>
+        <text x="170" y="92" text-anchor="middle">pentose</text>
+        <rect x="232" y="60" width="84" height="36" rx="6" fill="var(--bC)" stroke="var(--ink)" stroke-width="1.5"/>
+        <text x="274" y="82" text-anchor="middle" class="bl" style="font-family:var(--f-body);font-size:12px">base</text>
+        <text x="70" y="88" text-anchor="middle">fosfato</text>
+        <text x="118" y="50" text-anchor="middle" class="sm">5′</text>
+        <text x="206" y="70" class="sm">1′</text>
+        <text x="274" y="112" text-anchor="middle" class="sm">A, T, C, G ou U</text>
+        <text x="142" y="143" text-anchor="end">OH no 3′</text>
+        <text x="186" y="143">2′: H no DNA, OH no RNA</text>
+      </svg>
+      <figcaption>Um nucleotídeo. A diferença entre DNA e RNA no açúcar está no carbono 2′.</figcaption>
+    </figure>
+    <p>Na simulação, o nucleotídeo novo chega com três fosfatos. O OH do carbono 3′ da fita ataca o primeiro deles, os outros dois saem juntos como pirofosfato (PPi) e sobra uma ligação fosfodiéster unindo os dois açúcares. A quebra do pirofosfato fornece a energia da reação.</p>
+    <p>Por isso a fita só cresce em uma direção, de 5′ para 3′: é na ponta 3′ que existe o OH livre para receber o próximo nucleotídeo.</p>
+    <h3>DNA e RNA</h3>
+    <div class="tscroll"><table>
+      <thead><tr><th></th><th>DNA</th><th>RNA</th></tr></thead>
+      <tbody>
+        <tr><td>Açúcar</td><td>Desoxirribose</td><td>Ribose</td></tr>
+        <tr><td>Bases</td><td>A, T, C, G</td><td>A, U, C, G</td></tr>
+        <tr><td>Fitas</td><td>Duas, antiparalelas, em dupla hélice</td><td>Uma, que pode se dobrar sobre si mesma</td></tr>
+        <tr><td>Papel</td><td>Guardar a informação genética</td><td>Levar e executar a informação (mRNA, tRNA, rRNA)</td></tr>
+      </tbody>
+    </table></div>
+    <h3>Pontos para lembrar</h3>
+    <ul>
+      <li>A com T (ou U no RNA) fazem duas pontes de hidrogênio. C com G fazem três. Com a fita molde ligada, conte os tracinhos entre as bases.</li>
+      <li>As duas fitas do DNA são antiparalelas: uma corre de 5′ para 3′ e a outra no sentido contrário.</li>
+      <li>O esqueleto da fita é açúcar e fosfato alternados. As bases ficam voltadas para dentro.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ 3. REPLICAÇÃO ============ -->
+<section id="sec-replicacao" hidden>
+  <h2>Replicação do DNA</h2>
+  <p class="lede">Copie o DNA você mesma: escolha as enzimas na ordem em que elas trabalham na célula. Ou toque em Assistir animação para ver o processo inteiro acontecendo.</p>
+  <div class="stage">
+    <div id="rep-draw"></div>
+    <ul class="legend">
+      <li><i style="background:var(--old)"></i>fita antiga</li>
+      <li><i style="background:var(--new)"></i>DNA novo</li>
+      <li><i style="background:var(--rna)"></i>primer de RNA</li>
+    </ul>
+    <p class="stat" id="rep-stat"></p>
+  </div>
+  <div class="controls" id="rep-btns"></div>
+  <p class="fb" id="rep-fb" aria-live="polite"></p>
+  <div class="controls"><button class="btn pri" id="rep-play">▶ Assistir animação</button><button class="btn" id="rep-reset">Recomeçar</button></div>
+
+  <div class="explain">
+    <h3>O que você está vendo</h3>
+    <p>A replicação começa quando a dupla hélice é aberta e forma uma forquilha. Cada fita antiga serve de molde para uma fita nova. No fim, cada molécula tem uma fita antiga e uma nova, e por isso a replicação é chamada de semiconservativa.</p>
+    <p>A DNA polimerase tem duas limitações que explicam todo o resto. Ela só acrescenta nucleotídeos a uma ponta 3′-OH que já exista, então precisa de um primer. E ela só sintetiza no sentido 5′→3′. Como as fitas são antiparalelas, uma fita nova acompanha a abertura da forquilha e cresce sem parar (fita contínua). A outra cresce no sentido oposto, em pedaços, cada um com seu primer: são os fragmentos de Okazaki (fita descontínua).</p>
+    <p>Os nomes das enzimas aqui são os do modelo bacteriano, que é o usado na maioria dos livros. Em eucariontes a lógica é a mesma, com outras polimerases. A topoisomerase, que não aparece no desenho, trabalha à frente da forquilha aliviando a torção que a helicase provoca.</p>
+
+    <h3>Como se soube que é semiconservativa</h3>
+    <p>Em 1958, Meselson e Stahl cultivaram bactérias com nitrogênio pesado (¹⁵N) e depois as passaram para nitrogênio leve (¹⁴N). A cada geração, centrifugaram o DNA para ver seu peso. Escolha uma hipótese e veja o que ela previa.</p>
+    <div class="stage">
+      <div class="seg" id="hip-seg" style="align-self:center;flex-wrap:wrap">
+        <button data-h="semi" class="on">Semiconservativa</button>
+        <button data-h="cons">Conservativa</button>
+        <button data-h="disp">Dispersiva</button>
+      </div>
+      <div id="hip-draw"></div>
+      <ul class="legend">
+        <li><i style="background:var(--old)"></i>DNA pesado (¹⁵N)</li>
+        <li><i style="background:var(--new)"></i>DNA leve (¹⁴N)</li>
+      </ul>
+    </div>
+    <p class="fb" id="hip-fb" aria-live="polite"></p>
+
+    <h3>Pontos para lembrar</h3>
+    <ul>
+      <li>Ordem: helicase, SSB, primase, DNA polimerase III, DNA polimerase I, ligase.</li>
+      <li>A síntese é sempre 5′→3′. O molde é lido de 3′ para 5′.</li>
+      <li>Primer é de RNA e é provisório. No final ele é trocado por DNA.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ 4. TRANSCRIÇÃO ============ -->
+<section id="sec-transcricao" hidden>
+  <h2>Transcrição e processamento do RNA</h2>
+  <p class="lede">Faça o papel da RNA polimerase: leia a fita molde e escolha o nucleotídeo de RNA que pareia com cada base. Depois prepare o RNA para sair do núcleo.</p>
+  <div class="stage">
+    <p class="place" id="tr-place">No núcleo</p>
+    <div class="grid18" id="tr-struct"></div>
+    <p class="rowlab">Fita codificadora 5′→3′</p>
+    <div class="grid18" id="tr-cod"></div>
+    <p class="rowlab">Fita molde 3′→5′</p>
+    <div class="grid18" id="tr-tpl"></div>
+    <p class="rowlab">RNA em formação 5′→3′</p>
+    <div class="grid18" id="tr-rna"></div>
+    <div class="mol" id="tr-mol"></div>
+  </div>
+  <div class="controls" id="tr-phase1">
+    <div class="basebtns" id="tr-btns"></div>
+  </div>
+  <div class="controls" id="tr-phase2" hidden>
+    <button class="btn" data-p="cap">Colocar cap 5′</button>
+    <button class="btn" data-p="tail">Colocar cauda poli-A</button>
+    <button class="btn" data-p="spl">Fazer splicing</button>
+    <button class="btn pri" id="tr-export" disabled>Exportar pelo poro</button>
+  </div>
+  <p class="fb" id="tr-fb" aria-live="polite"></p>
+  <div class="controls">
+    <button class="btn pri" id="tr-auto">▶ Assistir animação</button>
+    <button class="btn" id="tr-reset">Recomeçar</button>
+    <button class="btn pri" id="tr-go" hidden>Traduzir este mRNA</button>
+  </div>
+
+  <div class="explain">
+    <h3>O que você está vendo</h3>
+    <p>Na transcrição, a RNA polimerase abre um trecho do DNA e usa uma das fitas como molde. O RNA sai complementar ao molde e, por isso, igual à fita codificadora, trocando T por U. Ao contrário da DNA polimerase, a RNA polimerase não precisa de primer.</p>
+    <p>Em eucariontes, o RNA recém-feito (pré-mRNA) ainda não está pronto. Ele passa por três mudanças dentro do núcleo:</p>
+    <ul>
+      <li><b>Cap 5′</b>: uma guanina modificada é colocada na ponta 5′. Protege o RNA e ajuda o ribossomo a reconhecê-lo. Na célula, isso acontece logo no começo da transcrição.</li>
+      <li><b>Cauda poli-A</b>: uma sequência longa de adeninas é adicionada à ponta 3′. Protege contra degradação e ajuda na exportação.</li>
+      <li><b>Splicing</b>: os íntrons são retirados e os éxons são unidos. Só os éxons seguem para a tradução.</li>
+    </ul>
+    <figure>
+      <ol class="flow">
+        <li><b>DNA</b> (gene com éxons e íntrons)</li>
+        <li class="step">transcrição, no núcleo</li>
+        <li><b>Pré-mRNA</b> (cópia inteira, com íntrons)</li>
+        <li class="step">cap 5′, cauda poli-A e splicing, no núcleo</li>
+        <li><b>mRNA maduro</b> (só éxons)</li>
+        <li class="step">saída pelo poro nuclear e tradução, no citoplasma</li>
+        <li><b>Proteína</b></li>
+      </ol>
+      <figcaption>O caminho da informação genética em uma célula eucariótica.</figcaption>
+    </figure>
+    <h3>Pontos para lembrar</h3>
+    <ul>
+      <li>Pareamento na transcrição: A do DNA com U, T com A, C com G, G com C.</li>
+      <li>Íntrons costumam começar com GU e terminar com AG. O íntron desta simulação segue essa regra.</li>
+      <li>Em procariontes não há núcleo nem esse processamento: o RNA já é traduzido enquanto é transcrito.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ 5. TRADUÇÃO ============ -->
+<section id="sec-traducao" hidden>
+  <h2>Tradução: do mRNA à proteína</h2>
+  <p class="lede">O ribossomo lê o mRNA de três em três bases. Avance códon por códon, ou digite a sua própria sequência para ver qual proteína sai.</p>
+  <div class="stage">
+    <div class="inrow">
+      <input id="tl-in" type="text" maxlength="90" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Sequência de mRNA" value="AUGGCUUGGAAAGAUUAA">
+      <button class="btn" id="tl-use">Usar</button>
+    </div>
+    <div class="strip" id="tl-strip"></div>
+    <p class="trna" id="tl-trna"></p>
+    <div class="chain" id="tl-chain"></div>
+  </div>
+  <div class="controls">
+    <button class="btn pri" id="tl-next">Próximo códon</button>
+    <button class="btn" id="tl-all">▶ Assistir animação</button>
+    <button class="btn" id="tl-reset">Recomeçar</button>
+  </div>
+  <p class="fb" id="tl-fb" aria-live="polite"></p>
+
+  <div class="explain">
+    <details id="tl-det">
+      <summary>Tabela do código genético</summary>
+      <div class="tscroll" id="tl-table"></div>
+    </details>
+    <h3>O que você está vendo</h3>
+    <p>O ribossomo se prende ao mRNA e procura o códon de início, AUG, que codifica metionina. A partir dele, cada trio de bases (códon) corresponde a um aminoácido. Quem faz a correspondência é o tRNA: em uma ponta ele tem o anticódon, que pareia com o códon, e na outra carrega o aminoácido certo.</p>
+    <p>A cada códon lido, o ribossomo une o novo aminoácido ao anterior por uma ligação peptídica e avança três bases. Quando chega a um códon de parada (UAA, UAG ou UGA), nenhum tRNA entra. Um fator de liberação ocupa o lugar e a proteína é solta.</p>
+    <h3>Pontos para lembrar</h3>
+    <ul>
+      <li>O código é degenerado: são 64 códons para 20 aminoácidos, então vários códons indicam o mesmo aminoácido. Veja na tabela.</li>
+      <li>A leitura é 5′→3′ no mRNA, e a proteína cresce da ponta amino para a ponta carboxila.</li>
+      <li>Trocar ou apagar uma base muda a leitura. Teste: apague uma letra no meio da sequência e veja o que acontece com todos os códons seguintes.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ 6. EPIGENÉTICA ============ -->
+<section id="sec-epigenetica" hidden>
+  <h2>Epigenética e controle dos genes</h2>
+  <p class="lede">Mexa nas duas marcas químicas e veja a cromatina abrir ou fechar. A sequência do gene não muda em nenhum momento: só muda se ele é lido.</p>
+  <div class="stage">
+    <div id="epi-draw"></div>
+    <ul class="legend">
+      <li><i style="background:var(--prot)"></i>histonas (nucleossomo)</li>
+      <li><i style="background:var(--ok)"></i>acetil</li>
+      <li><i style="background:var(--bad)"></i>metil no DNA</li>
+      <li><i style="background:var(--accent)"></i>RNA polimerase</li>
+      <li><i style="background:var(--rna)"></i>mRNA</li>
+    </ul>
+    <p class="stat"><b id="epi-state"></b></p>
+    <div class="meter" aria-hidden="true"><i id="epi-bar"></i></div>
+    <p class="stat" id="epi-expr"></p>
+    <p class="seqline">Sequência do gene: 5′-ATGGCTTGGTAA-3′ (igual em qualquer posição dos controles)</p>
+  </div>
+  <div class="controls">
+    <div class="slider">
+      <label for="epi-ac">Acetilação das histonas</label><output id="epi-ac-out"></output>
+      <input type="range" id="epi-ac" min="0" max="100" value="70">
+    </div>
+    <div class="slider">
+      <label for="epi-me">Metilação do DNA no promotor</label><output id="epi-me-out"></output>
+      <input type="range" id="epi-me" min="0" max="100" value="10">
+    </div>
+  </div>
+  <div class="controls">
+    <button class="btn pri" id="epi-play">▶ Assistir animação</button>
+    <button class="btn" id="epi-on">Gene ativo</button>
+    <button class="btn" id="epi-off">Gene silenciado</button>
+  </div>
+
+  <div class="explain">
+    <h3>O que você está vendo</h3>
+    <p>Todas as células do corpo têm o mesmo DNA, mas um neurônio e uma célula do fígado usam genes diferentes. O que decide isso é a regulação da expressão gênica. Parte dela é epigenética: marcas químicas no DNA e nas histonas que mudam a atividade dos genes sem alterar a sequência de bases, e que podem ser passadas adiante quando a célula se divide.</p>
+    <p>O DNA se enrola em grupos de oito histonas e forma os nucleossomos. Duas marcas principais controlam o quanto esse conjunto fica apertado:</p>
+    <ul>
+      <li><b>Acetilação das histonas</b>: o grupo acetil reduz a atração entre as histonas e o DNA. A cromatina afrouxa (eucromatina), a RNA polimerase alcança o promotor e o gene é transcrito. Retirar os acetis faz o contrário.</li>
+      <li><b>Metilação do DNA</b>: grupos metil são colocados em citosinas, principalmente em regiões ricas em C e G perto do promotor. Isso atrapalha a ligação dos fatores de transcrição e atrai proteínas que compactam a cromatina (heterocromatina). O gene fica silenciado.</li>
+    </ul>
+    <p>A simulação simplifica. Na célula, as histonas também podem ser metiladas, e o efeito depende do ponto exato: algumas dessas marcas ativam e outras reprimem o gene.</p>
+    <h3>Outros níveis de controle</h3>
+    <p>A epigenética decide se o gene está acessível. Com o gene acessível, ainda há controle em outras etapas: fatores de transcrição que se ligam ao promotor e a regiões reguladoras, splicing alternativo, tempo de vida do mRNA, bloqueio por pequenos RNAs e modificação ou degradação da proteína pronta.</p>
+    <h3>Exemplos que costumam ser cobrados</h3>
+    <ul>
+      <li>Diferenciação celular: cada tipo de célula mantém um padrão próprio de genes ligados e desligados.</li>
+      <li>Inativação do cromossomo X: nas fêmeas de mamíferos, um dos dois X é compactado em heterocromatina (corpúsculo de Barr).</li>
+      <li>Imprinting genômico: alguns genes são expressos só na cópia vinda do pai ou só na vinda da mãe, conforme a metilação.</li>
+      <li>Ambiente: alimentação, estresse e substâncias químicas podem alterar marcas epigenéticas.</li>
+    </ul>
+  </div>
+</section>
+
+</main>
+
+<script>
+(function(){
+"use strict";
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const TABS=['inicio','nucleo','cadeia','replicacao','transcricao','traducao','epigenetica'];
+let tlTimer=null,seqTimer=null,epiRaf=0;
+const smooth=u=>{u=Math.max(0,Math.min(1,u));return u*u*(3-2*u);};
+function stopSeq(){if(seqTimer){clearTimeout(seqTimer);seqTimer=null;}}
+function stopAll(){stopSeq();if(tlTimer){clearInterval(tlTimer);tlTimer=null;}cancelAnimationFrame(epiRaf);repPause();}
+
+function show(id,user){
+  if(!TABS.includes(id)) id='inicio';
+  $$('.tab').forEach(b=>{const on=b.dataset.tab===id;b.classList.toggle('on',on);b.setAttribute('aria-selected',on?'true':'false');
+    if(on){const row=b.parentElement;row.scrollLeft=Math.max(0,b.offsetLeft-row.offsetLeft-40);}});
+  $$('main>section').forEach(s=>{s.hidden=s.id!=='sec-'+id;});
+  stopAll();
+  if(user){try{history.replaceState(null,'','#'+id);}catch(e){} window.scrollTo(0,0);}
+}
+$$('.tab').forEach(b=>b.addEventListener('click',()=>show(b.dataset.tab,true)));
+window.addEventListener('hashchange',()=>show(location.hash.slice(1),false));
+$$('a.card').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();show(a.dataset.go,true);}));
+
+/* ================= 1. NÚCLEO ================= */
+const EUC={
+  envoltorio:['Envoltório nuclear','Duas membranas, uma interna e uma externa, que separam o material genético do citoplasma. A externa é contínua com o retículo endoplasmático rugoso.'],
+  poro:['Poros nucleares','Complexos de proteínas que atravessam as duas membranas. Controlam o que entra, como proteínas e nucleotídeos, e o que sai, como RNAs e subunidades de ribossomo.'],
+  lamina:['Lâmina nuclear','Rede de proteínas encostada na membrana interna. Dá forma e sustentação ao núcleo e serve de apoio para a cromatina.'],
+  nucleoplasma:['Nucleoplasma','Solução aquosa que preenche o núcleo, com íons, nucleotídeos, enzimas e proteínas. É onde a cromatina e o nucléolo ficam mergulhados.'],
+  nucleolo:['Nucléolo','Região densa e sem membrana. Nele o RNA ribossômico é produzido e as subunidades dos ribossomos começam a ser montadas.'],
+  eucromatina:['Eucromatina','Cromatina frouxa, pouco condensada. O DNA fica acessível e os genes dessa região podem ser transcritos.'],
+  heterocromatina:['Heterocromatina','Cromatina muito condensada, em geral junto ao envoltório. O DNA fica pouco acessível e os genes tendem a ficar silenciados.'],
+  rer:['Retículo endoplasmático rugoso','Fica fora do núcleo, mas sua membrana é a continuação da membrana nuclear externa. Os pontinhos são ribossomos.']
+};
+const PRO={
+  nucleoide:['Nucleoide','Região do citoplasma onde fica o cromossomo bacteriano, em geral uma única molécula circular de DNA. Não há membrana em volta, e por isso não é um núcleo.'],
+  plasmideo:['Plasmídeos','Pequenas moléculas circulares de DNA, independentes do cromossomo. Costumam carregar genes extras, como os de resistência a antibióticos.'],
+  ribossomo:['Ribossomos','Ficam soltos no citoplasma. Como não há envoltório nuclear, a tradução começa enquanto o RNA ainda está sendo transcrito.'],
+  parede:['Parede celular e membrana','Envolvem a célula inteira. Não existe nenhuma membrana interna separando o DNA do resto.'],
+  citoplasma:['Citoplasma','DNA, RNA e ribossomos dividem o mesmo compartimento.']
+};
+const QUIZ={euc:['envoltorio','poro','nucleolo','eucromatina','heterocromatina','rer','nucleoplasma'],pro:['nucleoide','plasmideo','ribossomo','parede']};
+const N1={cel:'euc',sel:null,quiz:null};
+const pol=(r,deg,cx=150,cy=150)=>{const a=deg*Math.PI/180;return [cx+r*Math.cos(a),cy+r*Math.sin(a)];};
+const f1=n=>n.toFixed(1);
+
+function svgEuc(){
+  let s='<svg id="nuc-svg" viewBox="0 0 330 300" role="img" aria-label="Corte de um núcleo eucariótico com envoltório, poros, lâmina, nucléolo, cromatina e retículo endoplasmático rugoso">';
+  // RER
+  s+='<g data-part="rer">';
+  [142,154,166].forEach((r,k)=>{const a0=-34+k*3,a1=34-k*3,p0=pol(r,a0),p1=pol(r,a1);
+    s+=`<path d="M${f1(p0[0])} ${f1(p0[1])}A${r} ${r} 0 0 1 ${f1(p1[0])} ${f1(p1[1])}" fill="none" stroke="var(--muted)" stroke-width="5" stroke-linecap="round"/>`;
+    for(let a=a0+4;a<a1;a+=9){const p=pol(r+5,a);s+=`<circle cx="${f1(p[0])}" cy="${f1(p[1])}" r="2.2" fill="var(--ink)"/>`;}
+  });
+  s+='</g>';
+  s+='<circle data-part="nucleoplasma" cx="150" cy="150" r="118" fill="var(--nfill)"/>';
+  // eucromatina
+  s+='<g data-part="eucromatina">';
+  [[150,105,.4],[185,135,1.7],[185,175,3.1],[150,195,4.4],[110,120,5.6]].forEach(([x,y,sd])=>{
+    let d=`M${x} ${y}`;
+    for(let i=0;i<4;i++){const a=sd+i*2.1,dx=14*Math.cos(a),dy=14*Math.sin(a*1.3);d+=`q${f1(dx+8*Math.sin(a*3))} ${f1(dy-9)} ${f1(dx)} ${f1(dy)}`;}
+    s+=`<path d="${d}" fill="none" stroke="transparent" stroke-width="16" pointer-events="stroke"/><path d="${d}" fill="none" stroke="var(--old)" stroke-width="1.8" stroke-linecap="round"/>`;
+  });
+  s+='</g>';
+  // heterocromatina
+  s+='<g data-part="heterocromatina">';
+  [20,65,110,155,200,245,290,335].forEach(a=>{const p=pol(99,a);s+=`<ellipse cx="${f1(p[0])}" cy="${f1(p[1])}" rx="9" ry="17" transform="rotate(${a} ${f1(p[0])} ${f1(p[1])})" fill="var(--old)"/>`;});
+  s+='</g>';
+  // nucléolo
+  s+='<g data-part="nucleolo"><circle cx="118" cy="168" r="30" fill="var(--rna)"/><circle cx="110" cy="160" r="6" fill="var(--nfill)" opacity=".35"/><circle cx="128" cy="178" r="4.5" fill="var(--nfill)" opacity=".35"/><circle cx="124" cy="156" r="3.5" fill="var(--nfill)" opacity=".35"/></g>';
+  // lâmina
+  s+='<g data-part="lamina"><circle cx="150" cy="150" r="113" fill="none" stroke="transparent" stroke-width="7" pointer-events="stroke"/><circle cx="150" cy="150" r="113" fill="none" stroke="var(--prot)" stroke-width="2.5" stroke-dasharray="3 4"/></g>';
+  // envoltório
+  s+='<g data-part="envoltorio"><circle cx="150" cy="150" r="122" fill="none" stroke="transparent" stroke-width="14" pointer-events="stroke"/><circle cx="150" cy="150" r="126" fill="none" stroke="var(--ink)" stroke-width="2.5"/><circle cx="150" cy="150" r="118.5" fill="none" stroke="var(--ink)" stroke-width="2.5"/></g>';
+  // poros
+  s+='<g data-part="poro">';
+  [42,88,133,178,223,268,313,358].forEach(a=>{const p=pol(122,a);s+=`<ellipse cx="${f1(p[0])}" cy="${f1(p[1])}" rx="9" ry="5.5" transform="rotate(${a} ${f1(p[0])} ${f1(p[1])})" fill="var(--new)" stroke="var(--ink)" stroke-width="1.2"/><circle cx="${f1(p[0])}" cy="${f1(p[1])}" r="12" fill="transparent"/>`;});
+  s+='</g></svg>';
+  return s;
+}
+function svgPro(){
+  let s='<svg id="nuc-svg" viewBox="0 0 330 300" role="img" aria-label="Célula procariótica com nucleoide, plasmídeos e ribossomos livres, sem núcleo">';
+  s+='<rect data-part="citoplasma" x="38" y="88" width="254" height="124" rx="62" fill="var(--nfill)"/>';
+  s+='<g data-part="parede"><rect x="35" y="85" width="260" height="130" rx="65" fill="none" stroke="transparent" stroke-width="18" pointer-events="stroke"/><rect x="33" y="83" width="264" height="134" rx="67" fill="none" stroke="var(--muted)" stroke-width="6"/><rect x="40" y="90" width="250" height="120" rx="60" fill="none" stroke="var(--ink)" stroke-width="2"/></g>';
+  s+='<g data-part="ribossomo">';
+  [[62,150],[75,125],[80,178],[98,110],[102,196],[122,104],[135,198],[160,102],[170,200],[196,104],[205,196],[222,112],[232,150],[262,150],[270,128],[268,172],[250,195],[215,160],[88,150]].forEach(([x,y])=>{s+=`<circle cx="${x}" cy="${y}" r="9" fill="transparent"/><circle cx="${x}" cy="${y}" r="2.8" fill="var(--ink)"/>`;});
+  s+='</g><g data-part="nucleoide"><ellipse cx="150" cy="150" rx="62" ry="36" fill="transparent"/>';
+  [[1,0],[.72,1.3]].forEach(([k,ph])=>{let d='';for(let i=0;i<=72;i++){const a=i*5*Math.PI/180,r=(26+8*Math.sin(5*a+ph)+5*Math.sin(3*a+1+ph))*k;d+=(i?'L':'M')+f1(150+1.75*r*Math.cos(a))+' '+f1(150+r*Math.sin(a));}
+    s+=`<path d="${d}Z" fill="none" stroke="var(--old)" stroke-width="2.6" stroke-linejoin="round"/>`;});
+  s+='</g><g data-part="plasmideo"><circle cx="248" cy="124" r="14" fill="transparent"/><circle cx="248" cy="124" r="8" fill="none" stroke="var(--new)" stroke-width="3"/><circle cx="240" cy="180" r="13" fill="transparent"/><circle cx="240" cy="180" r="6.5" fill="none" stroke="var(--new)" stroke-width="3"/></g></svg>';
+  return s;
+}
+function nucParts(){return N1.cel==='euc'?EUC:PRO;}
+function nucRender(){
+  $('#nuc-draw').innerHTML=N1.cel==='euc'?svgEuc():svgPro();
+  $$('#nuc-seg button').forEach(b=>b.classList.toggle('on',b.dataset.cel===N1.cel));
+  const P=nucParts(),chips=$('#nuc-chips');
+  chips.hidden=!!N1.quiz;
+  chips.innerHTML=Object.keys(P).map(k=>`<button data-part="${k}">${P[k][0]}</button>`).join('');
+  nucMark();
+}
+function nucMark(){
+  const svg=$('#nuc-svg'),P=nucParts(),info=$('#nuc-info');
+  svg.classList.toggle('has-sel',!!N1.sel);
+  $$('[data-part]',svg).forEach(g=>g.classList.toggle('sel',g.dataset.part===N1.sel));
+  $$('#nuc-chips button').forEach(b=>b.classList.toggle('on',b.dataset.part===N1.sel));
+  if(N1.quiz) return;
+  info.className='fb info';
+  if(N1.sel){info.innerHTML=`<h4>${P[N1.sel][0]}</h4><p>${P[N1.sel][1]}</p>`;}
+  else info.innerHTML=N1.cel==='euc'?'<p>Toque em uma estrutura para ver a explicação.</p>':'<p>Aqui o DNA fica solto no citoplasma. Toque nas partes para comparar com o núcleo.</p>';
+}
+function nucAsk(){
+  const list=QUIZ[N1.cel].filter(k=>k!==N1.quiz.alvo);
+  N1.quiz.alvo=list[Math.floor(Math.random()*list.length)];
+}
+function nucQuizUI(msg,cls){
+  const P=nucParts(),info=$('#nuc-info');
+  info.className='fb info'+(cls?' '+cls:'');
+  info.innerHTML=(msg?`<p>${msg}</p>`:'')+`<h4>Toque em: ${P[N1.quiz.alvo][0].toLowerCase()}</h4>`;
+  $('#nuc-score').textContent=`Acertos: ${N1.quiz.ok} de ${N1.quiz.total}`;
+}
+function nucPick(part){
+  const P=nucParts();
+  if(!P[part]) return;
+  if(N1.quiz){
+    N1.quiz.total++;
+    if(part===N1.quiz.alvo){N1.quiz.ok++;N1.sel=part;nucMark();const done=P[part][0];nucAsk();nucQuizUI(`Certo, ${done.toLowerCase()}.`,'ok');}
+    else{N1.sel=null;nucMark();nucQuizUI(`Essa parte é: ${P[part][0].toLowerCase()}. Tente de novo.`,'bad');}
+    return;
+  }
+  N1.sel=N1.sel===part?null:part;nucMark();
+}
+$('#nuc-draw').addEventListener('click',e=>{const g=e.target.closest('[data-part]');if(g)nucPick(g.dataset.part);});
+$('#nuc-chips').addEventListener('click',e=>{const b=e.target.closest('button');if(b)nucPick(b.dataset.part);});
+$('#nuc-seg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;N1.cel=b.dataset.cel;N1.sel=null;if(N1.quiz){N1.quiz={alvo:null,ok:0,total:0};nucAsk();}nucRender();if(N1.quiz)nucQuizUI('','');});
+$('#nuc-quiz').addEventListener('click',()=>{
+  if(N1.quiz){N1.quiz=null;N1.sel=null;$('#nuc-quiz').textContent='Me teste';$('#nuc-score').textContent='';nucRender();}
+  else{N1.quiz={alvo:null,ok:0,total:0};N1.sel=null;nucAsk();$('#nuc-quiz').textContent='Sair do teste';nucRender();nucQuizUI('','');}
+});
+
+/* ================= 2. CADEIA ================= */
+const C2={tipo:'DNA',molde:false,chain:[],tpl:[]};
+const comp=(b,rna)=>({A:rna?'U':'T',T:'A',U:'A',C:'G',G:'C'})[b];
+const hb=b=>(b==='C'||b==='G')?3:2;
+function cadNovoMolde(){C2.tpl=Array.from({length:8},()=>'ATCG'[Math.floor(Math.random()*4)]);}
+function cadDraw(novo){
+  const H=C2.molde?200:124,X=i=>34+i*40,n=C2.chain.length;
+  let s=`<svg viewBox="0 0 340 ${H}" role="img" aria-label="Fita de ${C2.tipo} com ${n} nucleotídeos">`;
+  if(C2.molde){
+    C2.tpl.forEach((b,i)=>{const x=X(i);
+      if(i<7) s+=`<line x1="${x+12}" y1="169" x2="${x+20}" y2="186" stroke="var(--ink)" stroke-width="1.5"/><line x1="${x+20}" y1="186" x2="${x+28}" y2="169" stroke="var(--ink)" stroke-width="1.5"/><circle cx="${x+20}" cy="186" r="6.5" fill="var(--phos)" stroke="var(--ink)" stroke-width="1"/>`;
+      s+=`<polygon points="${x},178 ${x+12},169 ${x+8},155 ${x-8},155 ${x-12},169" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/>`;
+      s+=`<rect class="b${b}" x="${x-12}" y="126" width="24" height="27" rx="4"/><text class="bl" x="${x}" y="144" text-anchor="middle">${b}</text>`;
+    });
+    s+='<text x="10" y="173" text-anchor="middle">3′</text><text x="332" y="173" text-anchor="middle">5′</text>';
+  }
+  if(!n) s+=`<rect x="22" y="58" width="24" height="52" rx="5" fill="none" stroke="var(--line)" stroke-width="1.5" stroke-dasharray="4 3"/><text x="58" y="88">Escolha uma base para começar</text>`;
+  C2.chain.forEach((b,i)=>{const x=X(i),isNew=novo&&i===n-1;
+    s+=`<g${isNew?' class="pop"':''}>`;
+    if(i>0) s+=`<line x1="${x-32}" y1="81" x2="${x-20}" y2="52" stroke="var(--ink)" stroke-width="1.5"/>`;
+    s+=`<line x1="${x-20}" y1="52" x2="${x-12}" y2="67" stroke="var(--ink)" stroke-width="1.5"/><circle cx="${x-20}" cy="52" r="6.5" fill="var(--phos)" stroke="var(--ink)" stroke-width="1"/>`;
+    s+=`<polygon points="${x},58 ${x+12},67 ${x+8},81 ${x-8},81 ${x-12},67" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/>`;
+    s+=`<rect class="b${b}" x="${x-12}" y="83" width="24" height="27" rx="4"/><text class="bl" x="${x}" y="101" text-anchor="middle">${b}</text>`;
+    if(C2.molde){const k=hb(b);for(let j=0;j<k;j++){const hx=x+(j-(k-1)/2)*7;s+=`<line x1="${hx}" y1="112" x2="${hx}" y2="124" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="2 2"/>`;}}
+    s+='</g>';
+    if(isNew&&i>0) s+=`<g class="ppi"><circle cx="${x-26}" cy="32" r="6" fill="var(--phos)" stroke="var(--ink)" stroke-width="1"/><circle cx="${x-14}" cy="32" r="6" fill="var(--phos)" stroke="var(--ink)" stroke-width="1"/><text x="${x-20}" y="20" text-anchor="middle" class="sm">PPi</text></g>`;
+  });
+  if(n){s+=`<text x="14" y="38" text-anchor="middle">5′</text>`;const x=X(n-1);s+=`<text x="${x+15}" y="78">${n<8?'3′-OH':'3′'}</text>`;}
+  $('#cad-draw').innerHTML=s+'</svg>';
+  $('#cad-stat').textContent=`Nucleotídeos: ${n} · Ligações fosfodiéster: ${Math.max(0,n-1)} · Pirofosfatos liberados: ${Math.max(0,n-1)}`;
+}
+function cadBtns(){
+  const bs=C2.tipo==='DNA'?'ATCG':'AUCG';
+  $('#cad-btns').innerHTML=[...bs].map(b=>`<button class="b${b}" data-b="${b}" aria-label="Adicionar ${b}">${b}</button>`).join('');
+  $('#cad-sugar').textContent=C2.tipo==='DNA'?'desoxirribose':'ribose';
+  $$('#cad-seg button').forEach(b=>b.classList.toggle('on',b.dataset.t===C2.tipo));
+  $$('#cad-molde button').forEach(b=>b.classList.toggle('on',(b.dataset.m==='1')===C2.molde));
+}
+function cadFb(t,c){const f=$('#cad-fb');f.className='fb'+(c?' '+c:'');f.innerHTML=t;}
+function cadReset(){
+  C2.chain=[];if(C2.molde)cadNovoMolde();cadBtns();cadDraw(false);
+  cadFb(C2.molde?`A fita molde está embaixo, no sentido 3′→5′. Monte a fita nova de ${C2.tipo} escolhendo a base que pareia com cada posição.`:`Monte uma fita de ${C2.tipo} com as bases que quiser.`,'');
+}
+function cadAdd(b){
+  const n=C2.chain.length,rna=C2.tipo==='RNA';
+  if(n>=8){cadFb('A fita já tem 8 nucleotídeos. Toque em Recomeçar para montar outra.','');return;}
+  if(C2.molde){const t=C2.tpl[n],ok=comp(t,rna);
+    if(b!==ok){cadFb(`<b>${b} não pareia com ${t}.</b> ${rna?'No RNA: A do molde com U, T com A, C com G, G com C.':'No DNA: A com T, C com G.'}`,'bad');return;}
+  }
+  C2.chain.push(b);cadDraw(true);
+  if(n===0) cadFb(`Primeiro nucleotídeo no lugar. Ele mantém o fosfato na ponta 5′ e deixa um OH livre na ponta 3′.`,'ok');
+  else cadFb(`<b>Ligação fosfodiéster formada.</b> O 3′-OH de ${C2.chain[n-1]} se ligou ao fosfato de ${b}, e dois fosfatos saíram como pirofosfato.`+(C2.molde?` ${b} e ${C2.tpl[n]} fazem ${hb(b)} pontes de hidrogênio.`:'')+(n===7?' Fita completa.':''),'ok');
+}
+$('#cad-btns').addEventListener('click',e=>{const bt=e.target.closest('button');if(bt){stopSeq();cadAdd(bt.dataset.b);}});
+$('#cad-play').addEventListener('click',()=>{stopSeq();cadReset();const go=()=>{const n=C2.chain.length;if(n>=8)return;cadAdd(C2.molde?comp(C2.tpl[n],C2.tipo==='RNA'):(C2.tipo==='DNA'?'ATCG':'AUCG')[Math.floor(Math.random()*4)]);seqTimer=setTimeout(go,1500);};seqTimer=setTimeout(go,500);});
+$('#cad-seg').addEventListener('click',e=>{const b=e.target.closest('button');if(b){stopSeq();C2.tipo=b.dataset.t;cadReset();}});
+$('#cad-molde').addEventListener('click',e=>{const b=e.target.closest('button');if(b){stopSeq();C2.molde=b.dataset.m==='1';cadReset();}});
+$('#cad-reset').addEventListener('click',()=>{stopSeq();cadReset();});
+
+/* ================= 3. REPLICAÇÃO ================= */
+const ENZ=[
+  {id:'helicase',nome:'Helicase',feito:'A helicase rompeu as pontes de hidrogênio entre as bases e abriu a dupla hélice. Formou-se a forquilha de replicação.',dica:'As fitas ainda estão pareadas. Primeiro é preciso abri-las.'},
+  {id:'ssb',nome:'Proteínas SSB',feito:'As proteínas SSB se ligaram às fitas simples e impedem que elas voltem a se parear.',dica:'As fitas acabaram de se separar e tendem a se juntar de novo. Quem as mantém separadas?'},
+  {id:'primase',nome:'Primase',feito:'A primase fez os primers: trechos curtos de RNA que oferecem a ponta 3′-OH de que a DNA polimerase precisa para começar.',dica:'A DNA polimerase não começa do zero. Ela precisa de uma ponta 3′-OH pronta.'},
+  {id:'pol3',nome:'DNA polimerase III',feito:'A DNA polimerase III alongou as fitas novas no sentido 5′→3′. Em cima a síntese é contínua. Embaixo ela acontece em pedaços: os fragmentos de Okazaki.',dica:'Os primers estão prontos. Quem alonga a fita a partir deles?'},
+  {id:'pol1',nome:'DNA polimerase I',feito:'A DNA polimerase I retirou os primers de RNA e pôs DNA no lugar. Ainda sobra uma falha entre os fragmentos.',dica:'As fitas novas ainda têm trechos de RNA. Quem troca RNA por DNA?'},
+  {id:'ligase',nome:'DNA ligase',feito:'A ligase fez a última ligação fosfodiéster e uniu os fragmentos. Cada molécula ficou com uma fita antiga e uma nova.',dica:'Falta só unir os fragmentos.'}
+];
+const REP_ORDER=['pol3','ligase','helicase','pol1','primase','ssb'];
+const R3={step:0};
+function repDraw(){
+  const s=R3.step,o='var(--old)',n='var(--new)',r='var(--rna)';
+  const ln=(x1,y,x2,c,w=4)=>`<line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" stroke="${c}" stroke-width="${w}" stroke-linecap="round"/>`;
+  const rungs=(a,b)=>{let t='';for(let x=a;x<=b;x+=11)t+=`<line x1="${x}" y1="93" x2="${x}" y2="107" stroke="var(--line)" stroke-width="2"/>`;return t;};
+  let h='<svg viewBox="0 0 340 196" role="img" aria-label="Forquilha de replicação, etapa '+s+' de 6">';
+  if(s===0){
+    h+=rungs(30,314)+ln(24,92,320,o)+ln(24,108,320,o);
+    h+='<text x="11" y="94" text-anchor="middle">3′</text><text x="11" y="116" text-anchor="middle">5′</text>';
+  }else{
+    h+=rungs(232,314);
+    h+=`<path d="M24 48H150C186 48 196 92 224 92H320" fill="none" stroke="${o}" stroke-width="4" stroke-linecap="round"/><path d="M24 152H150C186 152 196 108 224 108H320" fill="none" stroke="${o}" stroke-width="4" stroke-linecap="round"/>`;
+    h+='<text x="11" y="52" text-anchor="middle">3′</text><text x="11" y="156" text-anchor="middle">5′</text>';
+    h+='<circle cx="214" cy="100" r="12" fill="var(--accent)"/><text x="246" y="130" text-anchor="middle" class="sm">helicase</text>';
+    if(s===2||s===3){
+      const xs=[30,50,70,90,110,130,150];
+      xs.filter(x=>s===2||x>52).forEach(x=>{h+=`<circle cx="${x}" cy="60" r="4.5" fill="var(--muted)"/>`;});
+      xs.filter(x=>s===2||(x!==70&&x<126)).forEach(x=>{h+=`<circle cx="${x}" cy="140" r="4.5" fill="var(--muted)"/>`;});
+      if(s===2) h+='<text x="90" y="104" text-anchor="middle" class="sm">proteínas SSB</text>';
+    }
+    if(s===3||s===4){h+=ln(26,60,48,r,5)+ln(128,140,150,r,5)+ln(62,140,84,r,5);}
+    if(s===3) h+='<text x="90" y="104" text-anchor="middle" class="sm">primers de RNA</text>';
+    if(s===4){
+      h+=ln(52,60,150,n)+'<polygon points="150,54 161,60 150,66" fill="'+n+'"/>';
+      h+=ln(98,140,124,n)+'<polygon points="98,134 88,140 98,146" fill="'+n+'"/>';
+      h+=ln(36,140,58,n)+'<polygon points="36,134 26,140 36,146" fill="'+n+'"/>';
+    }
+    if(s===5){
+      h+=ln(26,60,150,n)+ln(90,140,150,n)+ln(26,140,82,n);
+      h+='<line x1="86" y1="130" x2="86" y2="150" stroke="var(--bad)" stroke-width="2" stroke-dasharray="3 2"/><text x="86" y="126" text-anchor="middle" class="sm">falha</text>';
+    }
+    if(s===6){h+=ln(26,60,150,n)+ln(26,140,150,n);}
+    if(s>=4){h+='<text x="88" y="36" text-anchor="middle" class="sm">fita contínua</text><text x="24" y="174" class="sm">fita descontínua (fragmentos de Okazaki)</text>';}
+  }
+  h+='<text x="331" y="90" text-anchor="middle">5′</text><text x="331" y="116" text-anchor="middle">3′</text></svg>';
+  $('#rep-draw').innerHTML=h;
+  $('#rep-stat').textContent=s<6?`Etapa ${s+1} de 6`:'Replicação concluída';
+  $('#rep-btns').innerHTML=REP_ORDER.map(id=>{const i=ENZ.findIndex(e=>e.id===id),e=ENZ[i];return `<button class="btn${i<s?' done':''}" data-e="${id}">${e.nome}${i<s?' ✓':''}</button>`;}).join('');
+}
+function repFb(t,c){const f=$('#rep-fb');f.className='fb'+(c?' '+c:'');f.innerHTML=t;}
+$('#rep-btns').addEventListener('click',ev=>{
+  const b=ev.target.closest('button');if(!b)return;if(RA.active){repExit();R3.step=0;repDraw();}
+  const i=ENZ.findIndex(e=>e.id===b.dataset.e),s=R3.step;
+  if(s>=6){repFb('A replicação já terminou. Toque em Recomeçar para refazer.','');return;}
+  if(i<s){repFb(`A ${ENZ[i].nome.toLowerCase()} já fez a parte dela. ${ENZ[s].dica}`,'bad');return;}
+  if(i>s){repFb(`<b>Ainda não é a vez dessa enzima.</b> ${ENZ[s].dica}`,'bad');return;}
+  R3.step++;repDraw();repFb(`<b>${ENZ[i].nome}.</b> ${ENZ[i].feito}`,'ok');
+});
+$('#rep-reset').addEventListener('click',()=>{repExit();R3.step=0;repDraw();repFb('O DNA está fechado em dupla hélice. Qual enzima age primeiro?','');});
+
+/* --- animação contínua da forquilha --- */
+const RA={t:0,raf:0,last:0,playing:false,active:false,cap:''};
+const FRG=[{a:24,b:94},{a:94,b:164},{a:164,b:234}];
+const tExp=x=>1.2+(x-24)/20;
+const T_LP=tExp(42);
+FRG.forEach(f=>{f.tp=tExp(f.b);f.td=f.tp+.4+(f.b-16-f.a)/40;});
+const T_END=FRG[2].td+2.4;
+const RA_EV=[[0,'O DNA está fechado em dupla hélice.'],[.5,'A helicase abre a dupla hélice e as proteínas SSB mantêm as fitas separadas.'],
+  [T_LP,'Fita contínua: depois de um primer de RNA, a DNA polimerase III alonga a fita nova e acompanha a forquilha sem parar.']];
+FRG.forEach((f,k)=>{RA_EV.push([f.tp,'Fita descontínua: a primase coloca um primer perto da forquilha e a DNA polimerase III faz um fragmento de Okazaki, crescendo para longe dela.']);
+  if(k>0){RA_EV.push([f.td,'A DNA polimerase I troca o primer do fragmento anterior por DNA.']);RA_EV.push([f.td+.8,'A ligase une os dois fragmentos.']);}});
+RA_EV.push([FRG[2].td+1.6,'A forquilha segue adiante e o ciclo se repete. Cada molécula fica com uma fita antiga e uma nova.']);
+RA_EV.sort((a,b)=>a[0]-b[0]);
+function repAnimDraw(t){
+  const o='var(--old)',n='var(--new)',r='var(--rna)';
+  const fx=t<.5?24:t<1.2?24+(t-.5)/.7*60:Math.min(300,84+20*(t-1.2));
+  const yT=x=>92-44*smooth((fx-x)/70),yB=x=>108+44*smooth((fx-x)/70);
+  const ln=(x1,y,x2,c,w=4)=>`<line x1="${f1(x1)}" y1="${y}" x2="${f1(x2)}" y2="${y}" stroke="${c}" stroke-width="${w}" stroke-linecap="round"/>`;
+  const mk=(x,y,c,lab,ly)=>`<circle cx="${f1(x)}" cy="${y}" r="6.5" fill="${c}" stroke="var(--ink)" stroke-width="1.5"/><text x="${f1(x)}" y="${ly}" text-anchor="middle" class="sm">${lab}</text>`;
+  let h='<svg viewBox="0 0 340 196" role="img" aria-label="Animação da forquilha de replicação">';
+  for(let x=30;x<=314;x+=11) if(x>fx+5) h+=`<line x1="${x}" y1="93" x2="${x}" y2="107" stroke="var(--line)" stroke-width="2"/>`;
+  let a='',b='';for(let x=24;x<=320;x+=4){a+=(x>24?'L':'M')+x+' '+f1(yT(x));b+=(x>24?'L':'M')+x+' '+f1(yB(x));}
+  h+=`<path d="${a}" fill="none" stroke="${o}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="${b}" fill="none" stroke="${o}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>`;
+  const lead=t>=T_LP+.4?Math.max(44,Math.min(fx-60,44+60*(t-T_LP-.4))):0;
+  // SSB
+  for(let x=34;x<fx-64;x+=18){
+    if(x>Math.max(lead,t>=T_LP?42:0)+8) h+=`<circle cx="${x}" cy="60" r="4" fill="var(--muted)"/>`;
+    const cov=FRG.some(f=>t>=f.tp&&x>=Math.max(f.a,f.b-16-40*Math.max(0,t-f.tp-.4))-8&&x<=f.b+6);
+    if(!cov) h+=`<circle cx="${x}" cy="140" r="4" fill="var(--muted)"/>`;
+  }
+  // fita contínua
+  if(t>=T_LP){h+=ln(26,60,42,r,5);
+    if(lead){h+=ln(46,60,lead,n)+mk(lead,60,n,'pol III',78);}
+    else h+=`<text x="34" y="78" text-anchor="middle" class="sm">primase</text>`;}
+  // fita descontínua
+  FRG.forEach((f,k)=>{
+    if(t<f.tp) return;
+    const nx=FRG[k+1],repl=nx&&t>=nx.td+.4,seal=nx&&t>=nx.td+1.6;
+    const tip=Math.max(f.a,f.b-16-40*Math.max(0,t-f.tp-.4)),grow=t>=f.tp+.4;
+    h+=ln(f.b-16,140,f.b-(seal?0:2),repl?n:r,repl?4:5);
+    if(grow){h+=ln(tip+(k&&!(t>=f.td+1.6)?3:0),140,f.b-18,n);if(t<f.td) h+=mk(tip,140,n,'pol III',126);}
+    else h+=`<text x="${f.b-8}" y="126" text-anchor="middle" class="sm">primase</text>`;
+    if(k>0&&t>=f.td&&t<f.td+.8) h+=mk(f.a-8,140,'var(--prot)','pol I',126);
+    if(k>0&&t>=f.td+.8&&t<f.td+1.6) h+=mk(f.a,140,'var(--ok)','ligase',126);
+  });
+  if(t>=.4) h+=`<circle cx="${f1(fx)}" cy="100" r="12" fill="var(--accent)"/><text x="${f1(Math.min(fx,296))}" y="130" text-anchor="middle" class="sm">helicase</text>`;
+  if(t>=T_LP) h+='<text x="24" y="36" class="sm">fita contínua</text>';
+  if(t>=FRG[0].tp) h+='<text x="24" y="174" class="sm">fita descontínua (fragmentos de Okazaki)</text>';
+  h+=`<text x="11" y="${f1(yT(24)+4)}" text-anchor="middle">3′</text><text x="11" y="${f1(yB(24)+6)}" text-anchor="middle">5′</text><text x="331" y="90" text-anchor="middle">5′</text><text x="331" y="116" text-anchor="middle">3′</text></svg>`;
+  $('#rep-draw').innerHTML=h;
+  let cap=RA_EV[0][1];for(const e of RA_EV){if(e[0]<=t)cap=e[1];}
+  if(cap!==RA.cap){RA.cap=cap;repFb(cap,'');}
+}
+function repTick(ts){
+  if(!RA.playing) return;
+  const dt=RA.last?Math.min(.05,(ts-RA.last)/1000):0;RA.last=ts;RA.t+=dt;
+  repAnimDraw(RA.t);
+  if(RA.t>=T_END){RA.playing=false;$('#rep-play').textContent='↻ Ver de novo';return;}
+  RA.raf=requestAnimationFrame(repTick);
+}
+function repPause(){if(RA.playing){RA.playing=false;cancelAnimationFrame(RA.raf);$('#rep-play').textContent='▶ Continuar';}}
+function repExit(){RA.playing=false;RA.active=false;cancelAnimationFrame(RA.raf);$('#rep-play').textContent='▶ Assistir animação';}
+$('#rep-play').addEventListener('click',()=>{
+  if(RA.playing){repPause();return;}
+  if(!RA.active||RA.t>=T_END){R3.step=0;repDraw();RA.t=0;RA.cap='';RA.active=true;$('#rep-stat').textContent='Animação';}
+  RA.playing=true;RA.last=0;$('#rep-play').textContent='❚❚ Pausar';RA.raf=requestAnimationFrame(repTick);
+});
+
+const HIP={
+  semi:{g:[[['OOOO','OOOO']],[['OOOO','NNNN'],['NNNN','OOOO']],[['OOOO','NNNN'],['NNNN','NNNN'],['NNNN','NNNN'],['NNNN','OOOO']]],b:[[[160,6]],[[142,6]],[[142,6],[124,6]]],
+    v:'<b>Bate com o experimento.</b> Na geração 1 todo o DNA tem peso intermediário (uma fita pesada e uma leve). Na geração 2 metade é intermediária e metade é leve. Foi isso que Meselson e Stahl observaram.',c:'ok'},
+  cons:{g:[[['OOOO','OOOO']],[['OOOO','OOOO'],['NNNN','NNNN']],[['OOOO','OOOO'],['NNNN','NNNN'],['NNNN','NNNN'],['NNNN','NNNN']]],b:[[[160,6]],[[160,6],[124,6]],[[160,3],[124,8]]],
+    v:'<b>Descartada.</b> Se a molécula antiga ficasse inteira e a nova fosse toda nova, a geração 1 teria duas bandas, uma pesada e uma leve. O experimento mostrou uma só, intermediária.',c:'bad'},
+  disp:{g:[[['OOOO','OOOO']],[['ONON','NONO'],['NONO','ONON']],[['ONNN','NNON'],['NNON','NONN'],['NONN','NNNO'],['NNNO','ONNN']]],b:[[[160,6]],[[142,6]],[[133,6]]],
+    v:'<b>Descartada.</b> Se o DNA antigo e o novo ficassem misturados em pedaços, a geração 1 bateria, mas a geração 2 teria uma única banda. O experimento mostrou duas.',c:'bad'}
+};
+function hipDraw(k){
+  const H=HIP[k],cx=[78,178,278];
+  let s='<svg viewBox="0 0 340 196" role="img" aria-label="Previsão da hipótese para três gerações">';
+  [['leve',128],['híbrida',146],['pesada',164]].forEach(([t,y])=>{s+=`<text x="2" y="${y}" class="sm">${t}</text>`;});
+  cx.forEach((x,gi)=>{
+    s+=`<text x="${x}" y="13" text-anchor="middle">Geração ${gi}</text>`;
+    H.g[gi].forEach((m,mi)=>{const y=24+mi*17;m.forEach((st,si)=>{[...st].forEach((c,ci)=>{s+=`<rect x="${x-32+ci*16}" y="${y+si*6}" width="16" height="4.5" fill="${c==='O'?'var(--old)':'var(--new)'}"/>`;});});});
+    s+=`<rect x="${x-15}" y="104" width="30" height="80" rx="14" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.5"/>`;
+    H.b[gi].forEach(([y,h])=>{s+=`<rect x="${x-12}" y="${y-h/2}" width="24" height="${h}" rx="2" fill="var(--ink)"/>`;});
+  });
+  $('#hip-draw').innerHTML=s+'</svg>';
+  const f=$('#hip-fb');f.className='fb '+H.c;f.innerHTML=H.v;
+  $$('#hip-seg button').forEach(b=>b.classList.toggle('on',b.dataset.h===k));
+}
+$('#hip-seg').addEventListener('click',e=>{const b=e.target.closest('button');if(b)hipDraw(b.dataset.h);});
+
+/* ================= 4. TRANSCRIÇÃO ================= */
+const G_RNA='AUGGCUGUCCAGUGGUAA',G_TPL='TACCGACAGGTCACCATT',G_COD='ATGGCTGTCCAGTGGTAA';
+const T4={pos:0,cap:false,tail:false,spl:false,out:false};
+function trFb(t,c){const f=$('#tr-fb');f.className='fb'+(c?' '+c:'');f.innerHTML=t;}
+function trDraw(){
+  const p=T4.pos,done=p>=18;
+  $('#tr-struct').innerHTML='<div class="span">éxon 1</div><div class="span intr">íntron</div><div class="span">éxon 2</div>';
+  $('#tr-cod').innerHTML=[...G_COD].map((b,i)=>`<div class="cell dim b${b}${i===p?' cur':''}">${b}</div>`).join('');
+  $('#tr-tpl').innerHTML=[...G_TPL].map((b,i)=>`<div class="cell b${b}${i===p?' cur':''}">${b}</div>`).join('');
+  $('#tr-rna').innerHTML=[...G_RNA].map((b,i)=>i<p?`<div class="cell b${b}">${b}</div>`:`<div class="cell empty${i===p?' cur':''}">·</div>`).join('');
+  let m='';
+  if(done){
+    if(T4.cap) m+='<span class="cap">cap</span>';
+    m+='<span>AUGGCU</span>'+(T4.spl?'':'<span class="x">GUCCAG</span>')+'<span>UGGUAA</span>';
+    if(T4.tail) m+='<span class="tail">AAAA…</span>';
+  }
+  $('#tr-mol').innerHTML=m;
+  $('#tr-phase1').hidden=done;$('#tr-phase2').hidden=!done||T4.out;
+  $$('#tr-phase2 [data-p]').forEach(b=>{const on=T4[b.dataset.p];b.classList.toggle('done',on);b.disabled=on;});
+  $('#tr-export').disabled=!(T4.cap&&T4.tail&&T4.spl);
+  $('#tr-place').textContent=T4.out?'No citoplasma':'No núcleo';
+  $('#tr-go').hidden=!T4.out;
+}
+$('#tr-btns').innerHTML=[...'AUCG'].map(b=>`<button class="b${b}" data-b="${b}" aria-label="Adicionar ${b}">${b}</button>`).join('');
+$('#tr-btns').addEventListener('click',e=>{
+  const bt=e.target.closest('button');if(!bt||T4.pos>=18)return;stopSeq();const b=bt.dataset.b,t=G_TPL[T4.pos],ok=G_RNA[T4.pos];
+  if(b!==ok){trFb(`<b>${b} não pareia com ${t}.</b> No molde há ${t}. No RNA, quem pareia com ${t} é ${ok}.`,'bad');return;}
+  T4.pos++;trDraw();
+  if(T4.pos>=18) trFb('<b>Pré-mRNA pronto.</b> Ele é uma cópia do gene inteiro, com o íntron. Antes de sair do núcleo precisa de cap, cauda e splicing.','ok');
+  else trFb(`${ok} entrou pareando com ${t}. O RNA cresce pela ponta 3′. Faltam ${18-T4.pos}.`,'ok');
+});
+const TR_MSG={cap:'<b>Cap 5′ colocado.</b> Uma guanina modificada protege a ponta 5′ e ajuda o ribossomo a reconhecer o mRNA.',tail:'<b>Cauda poli-A colocada.</b> Dezenas de adeninas na ponta 3′ protegem o mRNA da degradação.',spl:'<b>Splicing feito.</b> O íntron GUCCAG foi retirado e os dois éxons foram unidos.'};
+function trProc(p){T4[p]=true;trDraw();trFb(TR_MSG[p]+(T4.cap&&T4.tail&&T4.spl?' O mRNA está maduro e já pode ser exportado.':''),'ok');}
+function trExport(){T4.out=true;trDraw();trFb('<b>mRNA maduro no citoplasma.</b> Ele passou pelo poro nuclear. O ribossomo vai ler AUG GCU UGG UAA.','ok');}
+$('#tr-phase2').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;stopSeq();
+  if(b.id==='tr-export') trExport(); else trProc(b.dataset.p);
+});
+$('#tr-auto').addEventListener('click',()=>{
+  stopSeq();trReset();
+  const go=()=>{
+    if(T4.pos<18){const i=T4.pos;T4.pos++;trDraw();
+      trFb(T4.pos===18?'<b>Pré-mRNA pronto.</b> Ele é uma cópia do gene inteiro, com o íntron.':`A RNA polimerase leu ${G_TPL[i]} no molde e colocou ${G_RNA[i]} no RNA.`,'ok');
+      seqTimer=setTimeout(go,T4.pos===18?1800:420);return;}
+    const nx=['cap','tail','spl'].find(p=>!T4[p]);
+    if(nx){trProc(nx);seqTimer=setTimeout(go,2400);return;}
+    if(!T4.out) trExport();
+  };
+  seqTimer=setTimeout(go,600);
+});
+function trReset(){Object.assign(T4,{pos:0,cap:false,tail:false,spl:false,out:false});trDraw();trFb('A posição marcada é onde a RNA polimerase está. Escolha o nucleotídeo que pareia com a base da fita molde.','');}
+$('#tr-reset').addEventListener('click',()=>{stopSeq();trReset();});
+$('#tr-go').addEventListener('click',()=>{$('#tl-in').value='AUGGCUUGGUAA';tlLoad();show('traducao',true);});
+
+/* ================= 5. TRADUÇÃO ================= */
+const AA='FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG',BS='UCAG';
+const A3={F:['Phe','fenilalanina'],L:['Leu','leucina'],S:['Ser','serina'],Y:['Tyr','tirosina'],C:['Cys','cisteína'],W:['Trp','triptofano'],P:['Pro','prolina'],H:['His','histidina'],Q:['Gln','glutamina'],R:['Arg','arginina'],I:['Ile','isoleucina'],M:['Met','metionina'],T:['Thr','treonina'],N:['Asn','asparagina'],K:['Lys','lisina'],V:['Val','valina'],A:['Ala','alanina'],D:['Asp','ácido aspártico'],E:['Glu','ácido glutâmico'],G:['Gly','glicina']};
+const aaOf=c=>AA[BS.indexOf(c[0])*16+BS.indexOf(c[1])*4+BS.indexOf(c[2])];
+const T5={seq:'',start:-1,cod:[],rest:'',i:-1,done:false};
+function tlFb(t,c){const f=$('#tl-fb');f.className='fb'+(c?' '+c:'');f.innerHTML=t;}
+function tlTable(cur){
+  let h='<table class="ct"><thead><tr><th></th>'+[...BS].map(b=>`<th>${b}</th>`).join('')+'</tr></thead><tbody>';
+  [...BS].forEach(a=>{h+=`<tr><th>${a}</th>`;[...BS].forEach(b=>{h+='<td>';[...BS].forEach(c=>{const k=a+b+c,x=aaOf(k),t=k+' '+(x==='*'?'parada':A3[x][0]);h+=`<span>${k===cur?'<mark>'+t+'</mark>':t}</span>`;});h+='</td>';});h+='</tr>';});
+  $('#tl-table').innerHTML=h+'</tbody></table>';
+}
+function tlDraw(){
+  const st=$('#tl-strip');let h='<span class="end">5′</span>';
+  if(T5.start>0) h+=`<span class="utr">${T5.seq.slice(0,T5.start)}</span>`;
+  T5.cod.forEach((c,i)=>{const stop=aaOf(c)==='*';h+=`<span class="${i<T5.i?'read':''}${i===T5.i?' now':''}${stop?' stop':''}">${c}</span>`;});
+  if(T5.rest) h+=`<span class="utr">${T5.rest}</span>`;
+  st.innerHTML=h+'<span class="end">3′</span>';
+  const now=$('.now',st);if(now) st.scrollLeft=Math.max(0,now.offsetLeft-st.offsetLeft-st.clientWidth/2+now.offsetWidth/2);else st.scrollLeft=0;
+  const read=T5.cod.slice(0,T5.i+1).filter(c=>aaOf(c)!=='*');
+  let ch='<span class="t">H₂N</span>'+read.map(c=>`<span>${A3[aaOf(c)][0]}</span>`).join('');
+  if(T5.done) ch+='<span class="t">COOH</span>';
+  $('#tl-chain').innerHTML=ch;
+  const cur=T5.i>=0?T5.cod[T5.i]:null;
+  if(cur&&aaOf(cur)!=='*'){const anti=[...cur].map(b=>comp(b,true)).join('');$('#tl-trna').textContent=`códon 5′-${cur}-3′  ·  anticódon do tRNA 3′-${anti}-5′  ·  ${A3[aaOf(cur)][0]}`;}
+  else $('#tl-trna').textContent=cur?`códon 5′-${cur}-3′  ·  nenhum tRNA pareia`:'';
+  $('#tl-next').disabled=T5.done||T5.start<0;$('#tl-all').disabled=T5.done||T5.start<0;
+  tlTable(cur);
+}
+function tlLoad(){
+  if(tlTimer){clearInterval(tlTimer);tlTimer=null;}
+  const raw=$('#tl-in').value.toUpperCase().replace(/\s+/g,'').replace(/T/g,'U');
+  Object.assign(T5,{seq:raw,start:-1,cod:[],rest:'',i:-1,done:false});
+  if(!raw||/[^AUCG]/.test(raw)){T5.seq='';tlDraw();tlFb('<b>Sequência inválida.</b> Use só as letras A, U, C e G. Se digitar T, ele vira U.','bad');return;}
+  $('#tl-in').value=raw;
+  T5.start=raw.indexOf('AUG');
+  if(T5.start<0){tlDraw();$('#tl-strip').innerHTML=`<span class="end">5′</span><span class="utr">${raw}</span><span class="end">3′</span>`;tlFb('<b>Não há códon de início.</b> O ribossomo precisa encontrar um AUG para começar. Inclua AUG na sequência.','bad');return;}
+  const body=raw.slice(T5.start);let k=0;
+  for(;k+3<=body.length;k+=3){const c=body.slice(k,k+3);T5.cod.push(c);if(aaOf(c)==='*'){k+=3;break;}}
+  T5.rest=body.slice(k);
+  tlDraw();
+  tlFb(T5.start>0?`O ribossomo percorre o mRNA desde a ponta 5′ e ignora as ${T5.start} primeiras bases até achar o AUG. Toque em Próximo códon.`:'O ribossomo se prendeu à ponta 5′ do mRNA. Toque em Próximo códon para começar pelo AUG.','');
+}
+function tlStep(){
+  if(T5.done||T5.start<0) return;
+  T5.i++;const c=T5.cod[T5.i],x=aaOf(c),n=T5.cod.slice(0,T5.i+1).filter(k=>aaOf(k)!=='*').length;
+  if(x==='*'){T5.done=true;tlDraw();tlFb(`<b>Códon de parada ${c}.</b> Nenhum tRNA entra. Um fator de liberação solta a cadeia, que ficou com ${n} aminoácido${n===1?'':'s'}.`,'ok');return;}
+  if(T5.i===T5.cod.length-1){T5.done=true;tlDraw();tlFb(`${c} codifica ${A3[x][1]}. <b>O mRNA acabou sem códon de parada.</b> Na célula, isso deixaria o ribossomo preso. Acrescente UAA, UAG ou UGA ao final.`,'bad');return;}
+  tlDraw();
+  tlFb(T5.i===0?`<b>${c}: início.</b> O primeiro tRNA traz metionina (${A3[x][0]}).`:`<b>${c}</b> codifica ${A3[x][1]} (${A3[x][0]}). Uma ligação peptídica une o novo aminoácido à cadeia e o ribossomo avança três bases.`,'ok');
+}
+$('#tl-use').addEventListener('click',tlLoad);
+$('#tl-in').addEventListener('keydown',e=>{if(e.key==='Enter')tlLoad();});
+$('#tl-next').addEventListener('click',tlStep);
+$('#tl-reset').addEventListener('click',tlLoad);
+$('#tl-all').addEventListener('click',()=>{if(tlTimer)return;tlStep();tlTimer=setInterval(()=>{if(T5.done){clearInterval(tlTimer);tlTimer=null;return;}tlStep();},650);});
+
+/* ================= 6. EPIGENÉTICA ================= */
+function epiDraw(){
+  const ac=+$('#epi-ac').value,me=+$('#epi-me').value,expr=Math.round(ac*(100-me)/100),o=expr/100;
+  const sp=30+26*o,x0=170-2.5*sp,yb=104;
+  const pts=Array.from({length:6},(_,i)=>[x0+i*sp,yb+(i%2?1:-1)*(1-o)*9]);
+  let s='<svg viewBox="0 0 340 170" role="img" aria-label="Cromatina com seis nucleossomos, expressão do gene em '+expr+' por cento">';
+  s+=`<path d="M8 ${yb}${pts.map(p=>'L'+f1(p[0])+' '+f1(p[1])).join('')}L332 ${yb}" fill="none" stroke="var(--old)" stroke-width="3" stroke-linejoin="round"/>`;
+  const nMe=Math.floor(me/100*5+0.3),nAc=Math.round(ac/100*6);
+  [2,1,3,0,4].slice(0,nMe).forEach(i=>{const mx=(pts[i][0]+pts[i+1][0])/2,my=Math.max(pts[i][1],pts[i+1][1])+14;s+=`<line x1="${f1(mx)}" y1="${f1(my-10)}" x2="${f1(mx)}" y2="${f1(my+10)}" stroke="var(--bad)" stroke-width="2"/><circle cx="${f1(mx)}" cy="${f1(my+13)}" r="5" fill="var(--bad)"/>`;});
+  pts.forEach(p=>{s+=`<circle cx="${f1(p[0])}" cy="${f1(p[1])}" r="14.5" fill="var(--prot)" stroke="var(--old)" stroke-width="3"/>`;});
+  [2,3,1,4,0,5].slice(0,nAc).forEach(i=>{const p=pts[i];s+=`<line x1="${f1(p[0])}" y1="${f1(p[1]-15)}" x2="${f1(p[0]+5)}" y2="${f1(p[1]-27)}" stroke="var(--ok)" stroke-width="2"/><circle cx="${f1(p[0]+5)}" cy="${f1(p[1]-30)}" r="4.5" fill="var(--ok)"/>`;});
+  if(expr>=30){const mx=(pts[2][0]+pts[3][0])/2;s+=`<ellipse cx="${f1(mx)}" cy="${yb}" rx="11" ry="9" fill="var(--accent)" stroke="var(--surface)" stroke-width="1.5"/>`;}
+  const nR=Math.floor(expr/25);
+  for(let k=0;k<nR;k++){const y=18+k*11;s+=`<path d="M236 ${y}q6 -7 12 0t12 0t12 0t12 0" fill="none" stroke="var(--rna)" stroke-width="2.5" stroke-linecap="round"/>`;}
+  if(nR) s+='<text x="292" y="22" class="sm">mRNA</text>';
+  $('#epi-draw').innerHTML=s+'</svg>';
+  $('#epi-ac-out').textContent=ac+'%';$('#epi-me-out').textContent=me+'%';
+  $('#epi-bar').style.width=expr+'%';
+  $('#epi-expr').textContent=`Expressão do gene: ${expr}%`;
+  $('#epi-state').textContent=expr<20?'Heterocromatina: gene silenciado':expr<60?'Cromatina parcialmente aberta: pouca expressão':'Eucromatina: gene ativo';
+}
+$('#epi-ac').addEventListener('input',()=>{cancelAnimationFrame(epiRaf);epiDraw();});$('#epi-me').addEventListener('input',()=>{cancelAnimationFrame(epiRaf);epiDraw();});
+$('#epi-play').addEventListener('click',()=>{cancelAnimationFrame(epiRaf);let t0=null;const step=ts=>{if(t0===null)t0=ts;const u=(ts-t0)/1000,k=u<1?0:u<5?smooth((u-1)/4):u<6.5?1:u<10.5?1-smooth((u-6.5)/4):0;$('#epi-ac').value=Math.round(90-80*k);$('#epi-me').value=Math.round(5+85*k);epiDraw();if(u<10.5)epiRaf=requestAnimationFrame(step);};epiRaf=requestAnimationFrame(step);});
+$('#epi-on').addEventListener('click',()=>{cancelAnimationFrame(epiRaf);$('#epi-ac').value=90;$('#epi-me').value=5;epiDraw();});
+$('#epi-off').addEventListener('click',()=>{cancelAnimationFrame(epiRaf);$('#epi-ac').value=10;$('#epi-me').value=90;epiDraw();});
+
+/* ================= início ================= */
+nucRender();cadReset();
+repDraw();repFb('O DNA está fechado em dupla hélice. Qual enzima age primeiro?','');hipDraw('semi');
+trReset();tlLoad();epiDraw();
+let first=location.hash.slice(1);
+
+show(first,false);
+})();
+</script>
+
+</body>
+</html>
